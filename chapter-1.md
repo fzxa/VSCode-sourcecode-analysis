@@ -51,6 +51,10 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
     │   └── worker  # Worker factory和main Worker（运行IDE Core：Monaco）
     ├── code        # VSCode主运行窗口
     ├── editor        # IDE代码编辑器
+    |   ├── browser     # 代码编辑器核心
+    |   ├── common      # 代码编辑器核心
+    |   ├── contrib     # vscode 与独立 IDE共享的代码
+    |   └── standalone  # 独立 IDE 独有的代码
     ├── platform      # 支持注入服务和平台相关基础服务（文件、剪切板、窗体、状态栏）
     ├── workbench     # 工作区UI布局，功能主界面
     │   ├── api              # 
