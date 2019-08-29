@@ -52,7 +52,7 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
     ├── code        # VSCode主运行窗口
     ├── editor        # IDE代码编辑器
     ├── platform      # 支持注入服务和平台相关基础服务（文件、剪切板、窗体、状态栏）
-    ├── workbench     # 工作区UI布局，功能服务对接
+    ├── workbench     # 工作区UI布局，功能主界面
     │   ├── api              # 
     │   ├── browser          # 
     │   ├── common           # 
