@@ -20,9 +20,9 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 ## 整体架构
 ![avatar](https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/vscode-source.png?raw=true)
 
-### Electron [官网](https://electronjs.org/)
+### Electron 
 
-> Electron 是一个使用 JavaScript, HTML 和 CSS 等 Web 技术创建原生程序的框架，它负责比较难搞的部分，你只需把精力放在你的应用的核心上即可
+> [Electron](https://electronjs.org/?_blank) 是一个使用 JavaScript, HTML 和 CSS 等 Web 技术创建原生程序的框架，它负责比较难搞的部分，你只需把精力放在你的应用的核心上即可
 
 ### Monaco Editor [github](https://github.com/microsoft/monaco-editor)
 > Monaco Editor是为VS Code提供支持的代码编辑器，运行在浏览器环境中。编辑器提供代码提示，智能建议等功能。供开发人员远程更方便的编写代码。
