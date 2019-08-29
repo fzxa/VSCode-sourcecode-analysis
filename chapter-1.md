@@ -50,7 +50,7 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
     │   ├── test    # base单测用例
     │   └── worker  # Worker factory和main Worker（运行IDE Core：Monaco）
     ├── code        # VSCode主运行窗口
-    ├── editor        # 编辑器
+    ├── editor        # IDE代码编辑器
     ├── platform      # 支持注入服务和平台相关基础服务（文件、剪切板、窗体、状态栏）
     ├── workbench     # 协调editor并给viewlets提供框架，比如目录查看器、状态栏等，全局搜索，集成Git、Debug
     ├── css.build.js  # 用于插件构建的CSS loader
