@@ -19,5 +19,6 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 
 ## 整体架构
 ![avatar](https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/vscode-source.png?raw=true)
+### Electron
 > Electron 是一个使用 JavaScript, HTML 和 CSS 等 Web 技术创建原生程序的框架，它负责比较难搞的部分，你只需把精力放在你的应用的核心上即可
 ## 运行流程
