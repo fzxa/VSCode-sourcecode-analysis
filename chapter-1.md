@@ -27,4 +27,7 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 ### Monaco Editor
 > [Monaco Editor](https://github.com/microsoft/monaco-editor?_blank)是微软开源项目, 为VS Code提供支持的代码编辑器，运行在浏览器环境中。编辑器提供代码提示，智能建议等功能。供开发人员远程更方便的编写代码。
 
+### TypeScript
+> TypeScript是一种由微软开发的自由和开源的编程语言。它是JavaScript的一个超集，而且本质上向这个语言添加了可选的静态类型和基于类的面向对象编程
+
 ## 运行流程
