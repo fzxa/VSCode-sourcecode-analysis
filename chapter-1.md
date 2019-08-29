@@ -34,15 +34,15 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 
 ## 目录结构
 ```
-├── build       # gulp编译构建脚本
-├── extensions  # 内置插件
+├── build         # gulp编译构建脚本
+├── extensions    # 内置插件
 ├── product.json  # App meta信息
 ├── resources     # 平台相关静态资源
 ├── scripts       # 工具脚本，开发/测试
 ├── src           # 源码目录
 ├── typings       # 函数语法补全定义
 └── vs
-    ├── base      # 通用工具/协议和UI库
+    ├── base        # 通用工具/协议和UI库
     │   ├── browser # 基础UI组件，DOM操作、交互事件、DnD等
     │   ├── common  # diff描述，markdown解析器，worker协议，各种工具函数
     │   ├── node    # Node工具函数
