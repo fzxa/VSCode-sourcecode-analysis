@@ -33,6 +33,32 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 ## 运行流程
 
 ## 目录结构
-···
-
-···
+```
+├── build       # gulp编译构建脚本
+├── extensions  # 内置插件
+├── gulpfile.js # gulp task
+├── i18n        # 国际化翻译包
+├── out         # 编译输出目录
+├── product.json  # App meta信息
+├── resources     # 平台相关静态资源，图标等
+├── scripts       # 工具脚本，开发/测试
+├── src           # 源码目录
+└── vs
+    ├── base      # 通用工具/协议和UI库
+    │   ├── browser # 基础UI组件，DOM操作、交互事件、DnD等
+    │   ├── common  # diff描述，markdown解析器，worker协议，各种工具函数
+    │   ├── node    # Node工具函数
+    │   ├── parts   # IPC协议（Electron、Node），quickopen、tree组件
+    │   ├── test    # base单测用例
+    │   └── worker  # Worker factory和main Worker（运行IDE Core：Monaco）
+    ├── buildunit.json
+    ├── code        # VS Code主窗体相关
+    ├── css.build.js  # 用于插件构建的CSS loader
+    ├── css.js        # CSS loader
+    ├── editor        # 对接IDE Core（读取编辑/交互状态），提供命令、上下文菜单、hover、snippet等支持
+    ├── loader.js     # AMD loader（用于异步加载AMD模块，类似于require.js）
+    ├── nls.build.js  # 用于插件构建的NLS loader
+    ├── nls.js        # NLS（National Language Support）多语言loader
+    ├── platform      # 支持注入服务和平台相关基础服务（文件、剪切板、窗体、状态栏）
+    └── workbench     # 协调editor并给viewlets提供框架，比如目录查看器、状态栏等，全局搜索，集成Git、Debug
+```
