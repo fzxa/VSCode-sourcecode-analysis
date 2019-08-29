@@ -43,7 +43,7 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 ├── typings       # 函数语法补全定义
 └── vs
     ├── base        # 通用工具/协议和UI库
-    │   ├── browser # 基础UI组件，DOM操作、交互事件、DnD等
+    │   ├── browser # 基础UI组件，DOM操作
     │   ├── common  # diff描述，markdown解析器，worker协议，各种工具函数
     │   ├── node    # Node工具函数
     │   ├── parts   # IPC协议（Electron、Node），quickopen、tree组件
@@ -53,6 +53,13 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
     ├── editor        # IDE代码编辑器
     ├── platform      # 支持注入服务和平台相关基础服务（文件、剪切板、窗体、状态栏）
     ├── workbench     # 工作区UI布局，功能服务对接
+    │   ├── api              # 
+    │   ├── browser          # 
+    │   ├── common           # 
+    │   ├── contrib          # 
+    │   ├── electron-browser # 
+    │   ├── services         # 
+    │   └── test             # 
     ├── css.build.js  # 用于插件构建的CSS loader
     ├── css.js        # CSS loader
     ├── editor        # 对接IDE Core（读取编辑/交互状态），提供命令、上下文菜单、hover、snippet等支持
