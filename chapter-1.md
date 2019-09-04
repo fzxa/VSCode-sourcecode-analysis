@@ -367,3 +367,4 @@ private doGetUrl(config: object): string {
 }
 ```
 HTML出现了，main process的使命完成
+![avatar](https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/vscode-source.png)
