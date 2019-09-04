@@ -277,7 +277,7 @@ private openFirstWindow(accessor: ServicesAccessor, electronIpcServer: ElectronI
 
 		...
 
-		// Open our first window
+		// 根据environmentService进行参数配置
 		const macOpenFiles: string[] = (<any>global).macOpenFiles;
 		const context = !!process.env['VSCODE_CLI'] ? OpenContext.CLI : OpenContext.DESKTOP;
 		const hasCliArgs = hasArgs(args._);
@@ -288,7 +288,7 @@ private openFirstWindow(accessor: ServicesAccessor, electronIpcServer: ElectronI
 
 		...
 
-		// default: read paths from cli
+		// 打开主窗口，默认从执行命令行中读取参数 
 		return windowsMainService.open({
 			context,
 			cli: args,
