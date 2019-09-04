@@ -205,10 +205,11 @@ private async startup(args: ParsedArgs): Promise<void> {
 	}
 ```
 
-创建Service
-主要通过Promise.all创建3个服务IEnvironmentService，ConfigurationService，StateService
+这里通过createService创建一些基础的Service
 ```js
 private createServices(args: ParsedArgs, bufferLogService: BufferLogService): [IInstantiationService, typeof process.env] {
+	
+	//服务注册容器
 	const services = new ServiceCollection();
 
 	const environmentService = new EnvironmentService(args, process.execPath);
