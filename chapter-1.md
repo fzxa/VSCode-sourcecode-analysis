@@ -400,3 +400,61 @@ async open(): Promise<void> {
 }
 ...
 ```
+
+#### vs/workbench/browser/workbench.ts
+工作区继承自layout类，主要作用是构建工作区，创建界面布局。
+```js
+export class Workbench extends Layout {
+	...
+	startup(): IInstantiationService {
+		try {
+			...
+			
+			// Services
+			const instantiationService = this.initServices(this.serviceCollection);
+
+			instantiationService.invokeFunction(async accessor => {
+				const lifecycleService = accessor.get(ILifecycleService);
+				const storageService = accessor.get(IStorageService);
+				const configurationService = accessor.get(IConfigurationService);
+
+				// Layout
+				this.initLayout(accessor);
+
+				// Registries
+				this.startRegistries(accessor);
+
+				// Context Keys
+				this._register(instantiationService.createInstance(WorkbenchContextKeysHandler));
+
+				// 注册监听事件
+				this.registerListeners(lifecycleService, storageService, configurationService);
+
+				// 渲染工作区
+				this.renderWorkbench(instantiationService, accessor.get(INotificationService) as NotificationService, storageService, configurationService);
+
+				// 创建工作区布局
+				this.createWorkbenchLayout(instantiationService);
+
+				// 布局构建
+				this.layout();
+
+				// Restore
+				try {
+					await this.restoreWorkbench(accessor.get(IEditorService), accessor.get(IEditorGroupsService), accessor.get(IViewletService), accessor.get(IPanelService), accessor.get(ILogService), lifecycleService);
+				} catch (error) {
+					onUnexpectedError(error);
+				}
+			});
+
+			return instantiationService;
+		} catch (error) {
+			onUnexpectedError(error);
+
+			throw error; // rethrow because this is a critical issue we cannot handle properly here
+		}
+	}
+	...
+}
+```
+
