@@ -217,13 +217,19 @@ private createServices(args: ParsedArgs, bufferLogService: BufferLogService): [I
 
 	const logService = new MultiplexLogService([new ConsoleLogMainService(getLogLevel(environmentService)), bufferLogService]);
 	process.once('exit', () => logService.dispose());
+	//日志服务
 	services.set(ILogService, logService);
-
+	//配置服务
 	services.set(IConfigurationService, new ConfigurationService(environmentService.settingsResource));
+	//生命周期
 	services.set(ILifecycleService, new SyncDescriptor(LifecycleService));
+	//状态存储
 	services.set(IStateService, new SyncDescriptor(StateService));
+	//网络请求
 	services.set(IRequestService, new SyncDescriptor(RequestService));
+	//主题设定
 	services.set(IThemeMainService, new SyncDescriptor(ThemeMainService));
+	//注册服务
 	services.set(ISignService, new SyncDescriptor(SignService));
 
 	return [new InstantiationService(services, true), instanceEnvironment];
