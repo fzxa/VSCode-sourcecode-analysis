@@ -305,7 +305,7 @@ private openFirstWindow(accessor: ServicesAccessor, electronIpcServer: ElectronI
 
 #### vs/code/electron-main/windows.ts
 接下来到了electron的windows窗口，open方法在doOpen中执行窗口配置初始化，最终调用openInBrowserWindow -> 执行doOpenInBrowserWindow是其打开window,主要步骤如下：
-```
+```js
 private openInBrowserWindow(options: IOpenBrowserWindowOptions): ICodeWindow {
 
 	...
