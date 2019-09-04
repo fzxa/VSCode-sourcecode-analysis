@@ -334,7 +334,8 @@ private openInBrowserWindow(options: IOpenBrowserWindowOptions): ICodeWindow {
 		(this.lifecycleService as LifecycleService).registerWindow(window);
 	}
 
-
+	...
+	
 	return window;
 }
 ```
