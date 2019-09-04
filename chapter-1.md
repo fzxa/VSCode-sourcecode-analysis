@@ -179,7 +179,7 @@ private async startup(args: ParsedArgs): Promise<void> {
 					await this.initServices(environmentService, configurationService as ConfigurationService, stateService as StateService);
 				} catch (error) {
 
-					// Show a dialog for errors that can be resolved by the user
+					// 抛出错误对话框
 					this.handleStartupDataDirError(environmentService, error);
 
 					throw error;
