@@ -237,3 +237,80 @@ private createServices(args: ParsedArgs, bufferLogService: BufferLogService): [I
 	return [new InstantiationService(services, true), instanceEnvironment];
 }
 ```
+
+#### vs/code/electron-main/app.ts
+这里首先触发CodeApplication.startup()方法
+```js
+async startup(): Promise<void> {
+	this.logService.debug('Starting VS Code');
+	this.logService.debug(`from: ${this.environmentService.appRoot}`);
+	this.logService.debug('args:', this.environmentService.args);
+
+	// Make sure we associate the program with the app user model id
+	// This will help Windows to associate the running program with
+	// any shortcut that is pinned to the taskbar and prevent showing
+	// two icons in the taskbar for the same app.
+	if (isWindows && product.win32AppUserModelId) {
+		app.setAppUserModelId(product.win32AppUserModelId);
+	}
+
+	// Fix native tabs on macOS 10.13
+	// macOS enables a compatibility patch for any bundle ID beginning with
+	// "com.microsoft.", which breaks native tabs for VS Code when using this
+	// identifier (from the official build).
+	// Explicitly opt out of the patch here before creating any windows.
+	// See: https://github.com/Microsoft/vscode/issues/35361#issuecomment-399794085
+	try {
+		if (isMacintosh && this.configurationService.getValue<boolean>('window.nativeTabs') === true && !systemPreferences.getUserDefault('NSUseImprovedLayoutPass', 'boolean')) {
+			systemPreferences.setUserDefault('NSUseImprovedLayoutPass', 'boolean', true as any);
+		}
+	} catch (error) {
+		this.logService.error(error);
+	}
+
+	// Create Electron IPC Server
+	const electronIpcServer = new ElectronIPCServer();
+
+	// Resolve unique machine ID
+	this.logService.trace('Resolving machine identifier...');
+	const { machineId, trueMachineId } = await this.resolveMachineId();
+	this.logService.trace(`Resolved machine identifier: ${machineId} (trueMachineId: ${trueMachineId})`);
+
+	// Spawn shared process after the first window has opened and 3s have passed
+	const sharedProcess = this.instantiationService.createInstance(SharedProcess, machineId, this.userEnv);
+	const sharedProcessClient = sharedProcess.whenReady().then(() => connect(this.environmentService.sharedIPCHandle, 'main'));
+	this.lifecycleService.when(LifecycleMainPhase.AfterWindowOpen).then(() => {
+		this._register(new RunOnceScheduler(async () => {
+			const userEnv = await getShellEnvironment(this.logService, this.environmentService);
+
+			sharedProcess.spawn(userEnv);
+		}, 3000)).schedule();
+	});
+
+	// Services
+	const appInstantiationService = await this.createServices(machineId, trueMachineId, sharedProcess, sharedProcessClient);
+
+	// Create driver
+	if (this.environmentService.driverHandle) {
+		const server = await serveDriver(electronIpcServer, this.environmentService.driverHandle!, this.environmentService, appInstantiationService);
+
+		this.logService.info('Driver started at:', this.environmentService.driverHandle);
+		this._register(server);
+	}
+
+	// Setup Auth Handler
+	const authHandler = appInstantiationService.createInstance(ProxyAuthHandler);
+	this._register(authHandler);
+
+	// Open Windows
+	const windows = appInstantiationService.invokeFunction(accessor => this.openFirstWindow(accessor, electronIpcServer, sharedProcessClient));
+
+	// Post Open Windows Tasks
+	this.afterWindowOpen();
+
+	// Tracing: Stop tracing after windows are ready if enabled
+	if (this.environmentService.args.trace) {
+		this.stopTracingEventually(windows);
+	}
+}
+```
