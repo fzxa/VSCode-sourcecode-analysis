@@ -151,3 +151,6 @@ function onReady() {
 
 ### vs/code/electron-main/main.ts
 electron-main/main 是程序真正启动的入口
+#### 这里主要做了两件事情：
+1. 初始化Service 
+2. 启动主进程
