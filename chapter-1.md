@@ -208,24 +208,24 @@ private async startup(args: ParsedArgs): Promise<void> {
 创建Service
 主要通过Promise.all创建3个服务IEnvironmentService，ConfigurationService，StateService
 ```js
-private initServices(environmentService: IEnvironmentService, configurationService: ConfigurationService, stateService: StateService): Promise<unknown> {
+private createServices(args: ParsedArgs, bufferLogService: BufferLogService): [IInstantiationService, typeof process.env] {
+	const services = new ServiceCollection();
 
-		// 运行环境服务(Path)
-		const environmentServiceInitialization = Promise.all<void | undefined>([
-			environmentService.extensionsPath,
-			environmentService.nodeCachedDataDir,
-			environmentService.logsPath,
-			environmentService.globalStorageHome,
-			environmentService.workspaceStorageHome,
-			environmentService.backupHome.fsPath
-		].map((path): undefined | Promise<void> => path ? mkdirp(path) : undefined));
+	const environmentService = new EnvironmentService(args, process.execPath);
+	const instanceEnvironment = this.patchEnvironment(environmentService); // Patch `process.env` with the instance's environment
+	services.set(IEnvironmentService, environmentService);
 
-		// 配置服务
-		const configurationServiceInitialization = configurationService.initialize();
+	const logService = new MultiplexLogService([new ConsoleLogMainService(getLogLevel(environmentService)), bufferLogService]);
+	process.once('exit', () => logService.dispose());
+	services.set(ILogService, logService);
 
-		// 状态存储服务
-		const stateServiceInitialization = stateService.init();
+	services.set(IConfigurationService, new ConfigurationService(environmentService.settingsResource));
+	services.set(ILifecycleService, new SyncDescriptor(LifecycleService));
+	services.set(IStateService, new SyncDescriptor(StateService));
+	services.set(IRequestService, new SyncDescriptor(RequestService));
+	services.set(IThemeMainService, new SyncDescriptor(ThemeMainService));
+	services.set(ISignService, new SyncDescriptor(SignService));
 
-		return Promise.all([environmentServiceInitialization, configurationServiceInitialization, stateServiceInitialization]);
-	}
+	return [new InstantiationService(services, true), instanceEnvironment];
+}
 ```
