@@ -1,4 +1,7 @@
 # VSCode源码分析
+## 目录
+* 简介
+* 启动流程分析
 
 ## 简介
 Visual Studio Code(简称VSCode) 是开源免费的IDE编辑器，原本是微软内部使用的云编辑器。
