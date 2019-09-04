@@ -197,7 +197,7 @@ private async startup(args: ParsedArgs): Promise<void> {
 
 				bufferLogService.logger = new SpdLogService('main', environmentService.logsPath, bufferLogService.getLevel());
 				once(lifecycleService.onWillShutdown)(() => (configurationService as ConfigurationService).dispose());
-				//创建CodeApplication， mainIpcServer
+				//创建CodeApplication， mainIpcServer，instanceEnvironment并调用startup()
 				return instantiationService.createInstance(CodeApplication, mainIpcServer, instanceEnvironment).startup();
 			});
 		} catch (error) {
