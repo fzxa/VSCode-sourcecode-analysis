@@ -204,3 +204,28 @@ private async startup(args: ParsedArgs): Promise<void> {
 		}
 	}
 ```
+
+创建Service
+主要通过Promise.all创建3个服务IEnvironmentService，ConfigurationService，StateService
+```js
+private initServices(environmentService: IEnvironmentService, configurationService: ConfigurationService, stateService: StateService): Promise<unknown> {
+
+		// 运行环境服务(Path)
+		const environmentServiceInitialization = Promise.all<void | undefined>([
+			environmentService.extensionsPath,
+			environmentService.nodeCachedDataDir,
+			environmentService.logsPath,
+			environmentService.globalStorageHome,
+			environmentService.workspaceStorageHome,
+			environmentService.backupHome.fsPath
+		].map((path): undefined | Promise<void> => path ? mkdirp(path) : undefined));
+
+		// 配置服务
+		const configurationServiceInitialization = configurationService.initialize();
+
+		// 状态存储服务
+		const stateServiceInitialization = stateService.init();
+
+		return Promise.all([environmentServiceInitialization, configurationServiceInitialization, stateServiceInitialization]);
+	}
+```
