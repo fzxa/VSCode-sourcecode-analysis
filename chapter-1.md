@@ -72,7 +72,7 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 
 ## 启动流程分析
 
-入口src/main.js
+### 入口src/main.js
 ```js
 app.once('ready', function () {
 	if (args['trace']) {
@@ -150,3 +150,4 @@ function onReady() {
 ```
 
 ### vs/code/electron-main/main.ts
+electron-main/main 是程序真正启动的入口
