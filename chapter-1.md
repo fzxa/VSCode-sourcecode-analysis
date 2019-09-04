@@ -375,41 +375,28 @@ main process的使命完成, 主界面渲染完成初始化。
 
 
 #### vs/workbench/electron-browser/desktop.main
-
+创建工作区，调用workbench.startup()方法，构建主界面展示布局
 ```js
 ...
-const services = await this.initServices();
+async open(): Promise<void> {
+	const services = await this.initServices();
 	await domContentLoaded();
 	mark('willStartWorkbench');
 
-	// Create Workbench
+	// 1.创建工作区
 	const workbench = new Workbench(document.body, services.serviceCollection, services.logService);
 
-	// Layout
+	// 2.监听窗口变化
 	this._register(addDisposableListener(window, EventType.RESIZE, e => this.onWindowResize(e, true, workbench)));
 
-	// Workbench Lifecycle
+	// 3.工作台生命周期
 	this._register(workbench.onShutdown(() => this.dispose()));
 	this._register(workbench.onWillShutdown(event => event.join(services.storageService.close())));
 
-	// Startup
+	// 3.启动工作区
 	const instantiationService = workbench.startup();
 
-	// Window
-	this._register(instantiationService.createInstance(ElectronWindow));
-
-	// Driver
-	if (this.environmentService.configuration.driver) {
-		instantiationService.invokeFunction(async accessor => this._register(await registerWindowDriver(accessor)));
-	}
-
-	// Config Exporter
-	if (this.environmentService.configuration['export-default-configuration']) {
-		instantiationService.createInstance(DefaultConfigurationExportHelper);
-	}
-
-	// Logging
-	services.logService.trace('workbench configuration', JSON.stringify(this.environmentService.configuration));
+	...
 }
 ...
 ```
