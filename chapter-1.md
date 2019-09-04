@@ -147,3 +147,5 @@ function onReady() {
 	}, console.error);
 }
 ```
+
+### vs/code/electron-main/main.ts
