@@ -304,9 +304,37 @@ private openFirstWindow(accessor: ServicesAccessor, electronIpcServer: ElectronI
 ```
 
 #### vs/code/electron-main/windows.ts
-接下来到了electron的windows窗口管理，可以看到open调用ICodeWindow
+接下来到了electron的windows窗口，open方法在doOpen中执行窗口配置初始化，最终调用openInBrowserWindow -> 执行doOpenInBrowserWindow是其打开window,主要步骤如下：
 ```
-export interface IWindowsMainService {
+private openInBrowserWindow(options: IOpenBrowserWindowOptions): ICodeWindow {
+
 	...
-	open(openConfig: IOpenConfiguration): ICodeWindow[];
+	// New window
+	if (!window) {
+		//1.判断是否全屏创建窗口
+		 ...
+		// 2. 创建实例窗口
+		window = this.instantiationService.createInstance(CodeWindow, {
+			state,
+			extensionDevelopmentPath: configuration.extensionDevelopmentPath,
+			isExtensionTestHost: !!configuration.extensionTestsPath
+		});
+
+		// 3.添加到当前窗口控制器
+		WindowsManager.WINDOWS.push(window);
+
+		// 4.窗口监听器
+		window.win.webContents.removeAllListeners('devtools-reload-page'); // remove built in listener so we can handle this on our own
+		window.win.webContents.on('devtools-reload-page', () => this.reload(window!));
+		window.win.webContents.on('crashed', () => this.onWindowError(window!, WindowError.CRASHED));
+		window.win.on('unresponsive', () => this.onWindowError(window!, WindowError.UNRESPONSIVE));
+		window.win.on('closed', () => this.onWindowClosed(window!));
+
+		// 5.注册窗口生命周期
+		(this.lifecycleService as LifecycleService).registerWindow(window);
+	}
+
+
+	return window;
+}
 ```
