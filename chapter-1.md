@@ -276,8 +276,9 @@ window会被注册到sharedProcessClient，主进程和共享进程通信
 private openFirstWindow(accessor: ServicesAccessor, electronIpcServer: ElectronIPCServer, sharedProcessClient: Promise<Client<string>>): ICodeWindow[] {
 
 		...
+		// 1. 注入Electron IPC Service, windows窗口管理，菜单栏等服务
 
-		// 根据environmentService进行参数配置
+		// 2. 根据environmentService进行参数配置
 		const macOpenFiles: string[] = (<any>global).macOpenFiles;
 		const context = !!process.env['VSCODE_CLI'] ? OpenContext.CLI : OpenContext.DESKTOP;
 		const hasCliArgs = hasArgs(args._);
