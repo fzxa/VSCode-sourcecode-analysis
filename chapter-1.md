@@ -93,6 +93,7 @@ function onReady() {
 	perf.mark('main:appReady');
 
 	Promise.all([nodeCachedDataDir.ensureExists(), userDefinedLocale]).then(([cachedDataDir, locale]) => {
+		//这里尝试获取本地配置信息，如果有的话会传递到startup
 		if (locale && !nlsConfiguration) {
 			nlsConfiguration = lp.getNLSConfiguration(product.commit, userDataPath, metaDataFile, locale);
 		}
