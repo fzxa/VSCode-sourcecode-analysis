@@ -30,8 +30,6 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 ### TypeScript
 > TypeScript是一种由微软开发的自由和开源的编程语言。它是JavaScript的一个超集，而且本质上向这个语言添加了可选的静态类型和基于类的面向对象编程
 
-## 运行流程
-
 ## 目录结构
 ```
 ├── build         # gulp编译构建脚本
@@ -71,3 +69,5 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
     ├── nls.build.js  # 用于插件构建的NLS loader
     └── nls.js        # NLS（National Language Support）多语言loader
 ```
+
+## 启动流程分析
