@@ -186,7 +186,7 @@ private async startup(args: ParsedArgs): Promise<void> {
 				}
 			});
 
-			// Startup
+			// 启动
 			await instantiationService.invokeFunction(async accessor => {
 				const environmentService = accessor.get(IEnvironmentService);
 				const logService = accessor.get(ILogService);
@@ -197,7 +197,7 @@ private async startup(args: ParsedArgs): Promise<void> {
 
 				bufferLogService.logger = new SpdLogService('main', environmentService.logsPath, bufferLogService.getLevel());
 				once(lifecycleService.onWillShutdown)(() => (configurationService as ConfigurationService).dispose());
-
+				//创建CodeApplication， mainIpcServer
 				return instantiationService.createInstance(CodeApplication, mainIpcServer, instanceEnvironment).startup();
 			});
 		} catch (error) {
