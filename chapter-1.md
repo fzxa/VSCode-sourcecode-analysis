@@ -154,7 +154,7 @@ electron-main/main 是程序真正启动的入口
 1. 初始化Service 
 2. 启动主实例
 
-直接看startup方法的实现,基础服务初始化完成后会加载 IPC 信道并创建 CodeApplication 实例，调用 startup 方法启动
+直接看startup方法的实现,基础服务初始化完成后会加载 CodeApplication, mainIpcServer, instanceEnvironment，调用 startup 方法启动APP
 ```js
 private async startup(args: ParsedArgs): Promise<void> {
 
