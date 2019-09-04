@@ -118,7 +118,7 @@ function onReady() {
 				});
 			};
 
-			// 1. 接收到有效的配置传入是其生效
+			// 1. 接收到有效的配置传入是其生效，调用startup
 			if (nlsConfig) {
 				startup(nlsConfig);
 			}
@@ -133,7 +133,7 @@ function onReady() {
 
 					// 配置兼容大小写敏感，所以统一转换成小写
 					appLocale = appLocale.toLowerCase();
-
+					// 这里就会调用config服务，把本地配置加载进来再调用startup
 					lp.getNLSConfiguration(product.commit, userDataPath, metaDataFile, appLocale).then(nlsConfig => {
 						if (!nlsConfig) {
 							nlsConfig = { locale: appLocale, availableLanguages: {} };
