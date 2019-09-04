@@ -101,8 +101,7 @@ function onReady() {
 			nlsConfiguration = Promise.resolve(undefined);
 		}
 
-		// First, we need to test a user defined locale. If it fails we try the app locale.
-		// If that fails we fall back to English.
+		// 首先会检查用户语言环境配置，如果没有设置默认使用英语
 		nlsConfiguration.then(nlsConfig => {
 
 			const startup = nlsConfig => {
@@ -117,7 +116,7 @@ function onReady() {
 				});
 			};
 
-			// We recevied a valid nlsConfig from a user defined locale
+			// 接收到有效的配置传入是其生效
 			if (nlsConfig) {
 				startup(nlsConfig);
 			}
