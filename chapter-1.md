@@ -73,7 +73,7 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 ## 启动流程分析
 
 入口src/main.js
-```
+```js
 app.once('ready', function () {
 	if (args['trace']) {
 		// @ts-ignore
