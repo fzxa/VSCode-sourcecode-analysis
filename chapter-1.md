@@ -186,7 +186,7 @@ private async startup(args: ParsedArgs): Promise<void> {
 				}
 			});
 
-			// 启动
+			// 1.2 启动实例
 			await instantiationService.invokeFunction(async accessor => {
 				const environmentService = accessor.get(IEnvironmentService);
 				const logService = accessor.get(ILogService);
