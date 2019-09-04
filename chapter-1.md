@@ -266,3 +266,141 @@ async startup(): Promise<void> {
 	...
 }
 ```
+
+openFirstWindow 主要实现
+```js
+private openFirstWindow(accessor: ServicesAccessor, electronIpcServer: ElectronIPCServer, sharedProcessClient: Promise<Client<string>>): ICodeWindow[] {
+
+		// Register more Main IPC services
+		const launchService = accessor.get(ILaunchService);
+		const launchChannel = new LaunchChannel(launchService);
+		this.mainIpcServer.registerChannel('launch', launchChannel);
+
+		// Register more Electron IPC services
+		const updateService = accessor.get(IUpdateService);
+		const updateChannel = new UpdateChannel(updateService);
+		electronIpcServer.registerChannel('update', updateChannel);
+
+		const issueService = accessor.get(IIssueService);
+		const issueChannel = new IssueChannel(issueService);
+		electronIpcServer.registerChannel('issue', issueChannel);
+
+		const workspacesService = accessor.get(IWorkspacesMainService);
+		const workspacesChannel = new WorkspacesChannel(workspacesService);
+		electronIpcServer.registerChannel('workspaces', workspacesChannel);
+
+		const windowsService = accessor.get(IWindowsService);
+		const windowsChannel = new WindowsChannel(windowsService);
+		electronIpcServer.registerChannel('windows', windowsChannel);
+		sharedProcessClient.then(client => client.registerChannel('windows', windowsChannel));
+
+		const menubarService = accessor.get(IMenubarService);
+		const menubarChannel = new MenubarChannel(menubarService);
+		electronIpcServer.registerChannel('menubar', menubarChannel);
+
+		const urlService = accessor.get(IURLService);
+		const urlChannel = new URLServiceChannel(urlService);
+		electronIpcServer.registerChannel('url', urlChannel);
+
+		const storageMainService = accessor.get(IStorageMainService);
+		const storageChannel = this._register(new GlobalStorageDatabaseChannel(this.logService, storageMainService));
+		electronIpcServer.registerChannel('storage', storageChannel);
+
+		// Log level management
+		const logLevelChannel = new LogLevelSetterChannel(accessor.get(ILogService));
+		electronIpcServer.registerChannel('loglevel', logLevelChannel);
+		sharedProcessClient.then(client => client.registerChannel('loglevel', logLevelChannel));
+
+		// ExtensionHost Debug broadcast service
+		electronIpcServer.registerChannel(ExtensionHostDebugBroadcastChannel.ChannelName, new ExtensionHostDebugBroadcastChannel());
+
+		// Signal phase: ready (services set)
+		this.lifecycleService.phase = LifecycleMainPhase.Ready;
+
+		// Propagate to clients
+		const windowsMainService = this.windowsMainService = accessor.get(IWindowsMainService);
+
+		// Create a URL handler which forwards to the last active window
+		const activeWindowManager = new ActiveWindowManager(windowsService);
+		const activeWindowRouter = new StaticRouter(ctx => activeWindowManager.getActiveClientId().then(id => ctx === id));
+		const urlHandlerChannel = electronIpcServer.getChannel('urlHandler', activeWindowRouter);
+		const multiplexURLHandler = new URLHandlerChannelClient(urlHandlerChannel);
+
+		// On Mac, Code can be running without any open windows, so we must create a window to handle urls,
+		// if there is none
+		if (isMacintosh) {
+			const environmentService = accessor.get(IEnvironmentService);
+
+			urlService.registerHandler({
+				async handleURL(uri: URI): Promise<boolean> {
+					if (windowsMainService.getWindowCount() === 0) {
+						const cli = { ...environmentService.args };
+						const [window] = windowsMainService.open({ context: OpenContext.API, cli, forceEmpty: true, gotoLineMode: true });
+
+						await window.ready();
+
+						return urlService.open(uri);
+					}
+
+					return false;
+				}
+			});
+		}
+
+		// Register the multiple URL handler
+		urlService.registerHandler(multiplexURLHandler);
+
+		// Watch Electron URLs and forward them to the UrlService
+		const args = this.environmentService.args;
+		const urls = args['open-url'] ? args._urls : [];
+		const urlListener = new ElectronURLListener(urls || [], urlService, windowsMainService);
+		this._register(urlListener);
+
+		// Open our first window
+		const macOpenFiles: string[] = (<any>global).macOpenFiles;
+		const context = !!process.env['VSCODE_CLI'] ? OpenContext.CLI : OpenContext.DESKTOP;
+		const hasCliArgs = hasArgs(args._);
+		const hasFolderURIs = hasArgs(args['folder-uri']);
+		const hasFileURIs = hasArgs(args['file-uri']);
+		const noRecentEntry = args['skip-add-to-recently-opened'] === true;
+		const waitMarkerFileURI = args.wait && args.waitMarkerFilePath ? URI.file(args.waitMarkerFilePath) : undefined;
+
+		// new window if "-n" was used without paths
+		if (args['new-window'] && !hasCliArgs && !hasFolderURIs && !hasFileURIs) {
+			return windowsMainService.open({
+				context,
+				cli: args,
+				forceNewWindow: true,
+				forceEmpty: true,
+				noRecentEntry,
+				waitMarkerFileURI,
+				initialStartup: true
+			});
+		}
+
+		// mac: open-file event received on startup
+		if (macOpenFiles && macOpenFiles.length && !hasCliArgs && !hasFolderURIs && !hasFileURIs) {
+			return windowsMainService.open({
+				context: OpenContext.DOCK,
+				cli: args,
+				urisToOpen: macOpenFiles.map(file => this.getURIToOpenFromPathSync(file)),
+				noRecentEntry,
+				waitMarkerFileURI,
+				gotoLineMode: false,
+				initialStartup: true
+			});
+		}
+
+		// default: read paths from cli
+		return windowsMainService.open({
+			context,
+			cli: args,
+			forceNewWindow: args['new-window'] || (!hasCliArgs && args['unity-launch']),
+			diffMode: args.diff,
+			noRecentEntry,
+			waitMarkerFileURI,
+			gotoLineMode: args.goto,
+			initialStartup: true
+		});
+	}
+```
