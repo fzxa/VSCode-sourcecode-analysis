@@ -71,3 +71,79 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 ```
 
 ## 启动流程分析
+
+入口src/main.js
+```
+app.once('ready', function () {
+	if (args['trace']) {
+		// @ts-ignore
+		const contentTracing = require('electron').contentTracing;
+
+		const traceOptions = {
+			categoryFilter: args['trace-category-filter'] || '*',
+			traceOptions: args['trace-options'] || 'record-until-full,enable-sampling'
+		};
+
+		contentTracing.startRecording(traceOptions, () => onReady());
+	} else {
+		onReady();
+	}
+});
+function onReady() {
+	perf.mark('main:appReady');
+
+	Promise.all([nodeCachedDataDir.ensureExists(), userDefinedLocale]).then(([cachedDataDir, locale]) => {
+		if (locale && !nlsConfiguration) {
+			nlsConfiguration = lp.getNLSConfiguration(product.commit, userDataPath, metaDataFile, locale);
+		}
+
+		if (!nlsConfiguration) {
+			nlsConfiguration = Promise.resolve(undefined);
+		}
+
+		// First, we need to test a user defined locale. If it fails we try the app locale.
+		// If that fails we fall back to English.
+		nlsConfiguration.then(nlsConfig => {
+
+			const startup = nlsConfig => {
+				nlsConfig._languagePackSupport = true;
+				process.env['VSCODE_NLS_CONFIG'] = JSON.stringify(nlsConfig);
+				process.env['VSCODE_NODE_CACHED_DATA_DIR'] = cachedDataDir || '';
+
+				// Load main in AMD
+				perf.mark('willLoadMainBundle');
+				require('./bootstrap-amd').load('vs/code/electron-main/main', () => {
+					perf.mark('didLoadMainBundle');
+				});
+			};
+
+			// We recevied a valid nlsConfig from a user defined locale
+			if (nlsConfig) {
+				startup(nlsConfig);
+			}
+
+			// Try to use the app locale. Please note that the app locale is only
+			// valid after we have received the app ready event. This is why the
+			// code is here.
+			else {
+				let appLocale = app.getLocale();
+				if (!appLocale) {
+					startup({ locale: 'en', availableLanguages: {} });
+				} else {
+
+					// See above the comment about the loader and case sensitiviness
+					appLocale = appLocale.toLowerCase();
+
+					lp.getNLSConfiguration(product.commit, userDataPath, metaDataFile, appLocale).then(nlsConfig => {
+						if (!nlsConfig) {
+							nlsConfig = { locale: appLocale, availableLanguages: {} };
+						}
+
+						startup(nlsConfig);
+					});
+				}
+			}
+		});
+	}, console.error);
+}
+```
