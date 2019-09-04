@@ -303,3 +303,10 @@ private openFirstWindow(accessor: ServicesAccessor, electronIpcServer: ElectronI
 	}
 ```
 
+#### vs/code/electron-main/windows.ts
+接下来到了electron的windows窗口管理，可以看到open调用ICodeWindow
+```
+export interface IWindowsMainService {
+	...
+	open(openConfig: IOpenConfiguration): ICodeWindow[];
+```
