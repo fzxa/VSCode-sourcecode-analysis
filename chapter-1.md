@@ -73,7 +73,7 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 ## 启动流程分析
 
 ### 入口src/main.js
-进入main process初始化流程
+
 ```js
 app.once('ready', function () {
 	if (args['trace']) {
@@ -150,7 +150,7 @@ function onReady() {
 ```
 
 ### vs/code/electron-main/main.ts
-electron-main/main 是程序真正启动的入口
+electron-main/main 是程序真正启动的入口,进入main process初始化流程.
 #### 这里主要做了两件事情：
 1. 初始化Service 
 2. 启动主实例
