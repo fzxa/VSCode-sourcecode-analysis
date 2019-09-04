@@ -366,9 +366,8 @@ private doGetUrl(config: object): string {
 	return `${require.toUrl('vs/code/electron-browser/workbench/workbench.html')}?config=${encodeURIComponent(JSON.stringify(config))}`;
 }
 ```
-main process的使命完成, 主界面渲染完成初始化。
+main process的使命完成, 主界面进行构建布局。
 
-![avatar](https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/vscode-welcome.png)
 
 在workbench.html中加载了workbench.js，
 这里调用return require('vs/workbench/electron-browser/desktop.main').main(configuration);实现对主界面的展示
@@ -457,4 +456,5 @@ export class Workbench extends Layout {
 	...
 }
 ```
+![img](https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/vscode-welcome.png)
 
