@@ -367,4 +367,48 @@ private doGetUrl(config: object): string {
 }
 ```
 main process的使命完成, 主界面渲染完成初始化。
+
 ![avatar](https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/vscode-welcome.png)
+
+在workbench.html中加载了workbench.js，
+这里调用return require('vs/workbench/electron-browser/desktop.main').main(configuration);实现对主界面的展示
+
+
+#### vs/workbench/electron-browser/desktop.main
+
+```js
+
+const services = await this.initServices();
+	await domContentLoaded();
+	mark('willStartWorkbench');
+
+	// Create Workbench
+	const workbench = new Workbench(document.body, services.serviceCollection, services.logService);
+
+	// Layout
+	this._register(addDisposableListener(window, EventType.RESIZE, e => this.onWindowResize(e, true, workbench)));
+
+	// Workbench Lifecycle
+	this._register(workbench.onShutdown(() => this.dispose()));
+	this._register(workbench.onWillShutdown(event => event.join(services.storageService.close())));
+
+	// Startup
+	const instantiationService = workbench.startup();
+
+	// Window
+	this._register(instantiationService.createInstance(ElectronWindow));
+
+	// Driver
+	if (this.environmentService.configuration.driver) {
+		instantiationService.invokeFunction(async accessor => this._register(await registerWindowDriver(accessor)));
+	}
+
+	// Config Exporter
+	if (this.environmentService.configuration['export-default-configuration']) {
+		instantiationService.createInstance(DefaultConfigurationExportHelper);
+	}
+
+	// Logging
+	services.logService.trace('workbench configuration', JSON.stringify(this.environmentService.configuration));
+}
+```
