@@ -366,3 +366,4 @@ private doGetUrl(config: object): string {
 	return `${require.toUrl('vs/code/electron-browser/workbench/workbench.html')}?config=${encodeURIComponent(JSON.stringify(config))}`;
 }
 ```
+HTML出现了，main process的使命完成
