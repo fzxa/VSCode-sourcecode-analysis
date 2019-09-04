@@ -239,20 +239,12 @@ private createServices(args: ParsedArgs, bufferLogService: BufferLogService): [I
 ```
 
 #### vs/code/electron-main/app.ts
-这里首先触发CodeApplication.startup()方法
+这里首先触发CodeApplication.startup()方法， 在第一个窗口打开3秒后成为共享进程，
 ```js
 async startup(): Promise<void> {
 	...
 
-	// Create Electron IPC Server
-	const electronIpcServer = new ElectronIPCServer();
-
-	// Resolve unique machine ID
-	this.logService.trace('Resolving machine identifier...');
-	const { machineId, trueMachineId } = await this.resolveMachineId();
-	this.logService.trace(`Resolved machine identifier: ${machineId} (trueMachineId: ${trueMachineId})`);
-
-	// Spawn shared process after the first window has opened and 3s have passed
+	// 1. 第一个窗口创建共享进程
 	const sharedProcess = this.instantiationService.createInstance(SharedProcess, machineId, this.userEnv);
 	const sharedProcessClient = sharedProcess.whenReady().then(() => connect(this.environmentService.sharedIPCHandle, 'main'));
 	this.lifecycleService.when(LifecycleMainPhase.AfterWindowOpen).then(() => {
@@ -262,31 +254,15 @@ async startup(): Promise<void> {
 			sharedProcess.spawn(userEnv);
 		}, 3000)).schedule();
 	});
-
-	// Services
+	// 2. 创建app实例
 	const appInstantiationService = await this.createServices(machineId, trueMachineId, sharedProcess, sharedProcessClient);
 
-	// Create driver
-	if (this.environmentService.driverHandle) {
-		const server = await serveDriver(electronIpcServer, this.environmentService.driverHandle!, this.environmentService, appInstantiationService);
 
-		this.logService.info('Driver started at:', this.environmentService.driverHandle);
-		this._register(server);
-	}
-
-	// Setup Auth Handler
-	const authHandler = appInstantiationService.createInstance(ProxyAuthHandler);
-	this._register(authHandler);
-
-	// Open Windows
+	// 3. 打开一个窗口 调用 openFirstWindow
 	const windows = appInstantiationService.invokeFunction(accessor => this.openFirstWindow(accessor, electronIpcServer, sharedProcessClient));
 
-	// Post Open Windows Tasks
+	// 4. 窗口打开后执行生命周期和授权操作
 	this.afterWindowOpen();
-
-	// Tracing: Stop tracing after windows are ready if enabled
-	if (this.environmentService.args.trace) {
-		this.stopTracingEventually(windows);
-	}
+	...
 }
 ```
