@@ -103,7 +103,8 @@ function onReady() {
 
 		// 首先会检查用户语言环境配置，如果没有设置默认使用英语
 		nlsConfiguration.then(nlsConfig => {
-
+			
+			//这里都用调用startup方法load electron主进程
 			const startup = nlsConfig => {
 				nlsConfig._languagePackSupport = true;
 				process.env['VSCODE_NLS_CONFIG'] = JSON.stringify(nlsConfig);
@@ -111,26 +112,26 @@ function onReady() {
 
 				// Load main in AMD
 				perf.mark('willLoadMainBundle');
+				//使用微软的loader组件加载electron-main/main文件，electron的主进程。
 				require('./bootstrap-amd').load('vs/code/electron-main/main', () => {
 					perf.mark('didLoadMainBundle');
 				});
 			};
 
-			// 接收到有效的配置传入是其生效
+			// 1. 接收到有效的配置传入是其生效
 			if (nlsConfig) {
 				startup(nlsConfig);
 			}
 
-			// Try to use the app locale. Please note that the app locale is only
-			// valid after we have received the app ready event. This is why the
-			// code is here.
+			// 2. 这里尝试使用本地的应用程序
+			// 应用程序设置区域在ready事件后才有效
 			else {
 				let appLocale = app.getLocale();
 				if (!appLocale) {
 					startup({ locale: 'en', availableLanguages: {} });
 				} else {
 
-					// See above the comment about the loader and case sensitiviness
+					// 配置兼容大小写敏感，所以统一转换成小写
 					appLocale = appLocale.toLowerCase();
 
 					lp.getNLSConfiguration(product.commit, userDataPath, metaDataFile, appLocale).then(nlsConfig => {
