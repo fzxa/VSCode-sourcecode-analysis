@@ -270,7 +270,8 @@ async startup(): Promise<void> {
 
 openFirstWindow 主要实现
 CodeApplication.openFirstWindow 首次开启窗口时，创建 Electron 的 IPC，使主进程和渲染进程间通信。
-根据 environmentService 提供的相关参数调用windowsMainService.open 方法打开窗口
+window会被注册到sharedProcessClient，主进程和共享进程通信
+根据 environmentService 提供的参数(path,uri)调用windowsMainService.open 方法打开窗口
 ```js
 private openFirstWindow(accessor: ServicesAccessor, electronIpcServer: ElectronIPCServer, sharedProcessClient: Promise<Client<string>>): ICodeWindow[] {
 
@@ -300,14 +301,4 @@ private openFirstWindow(accessor: ServicesAccessor, electronIpcServer: ElectronI
 		});
 	}
 ```
-afterWindowOpen()
-```js
-private afterWindowOpen(): void {
 
-	// Signal phase: after window open
-	this.lifecycleService.phase = LifecycleMainPhase.AfterWindowOpen;
-
-	// Remote Authorities
-	this.handleRemoteAuthorities();
-}
-```
