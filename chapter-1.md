@@ -339,3 +339,30 @@ private openInBrowserWindow(options: IOpenBrowserWindowOptions): ICodeWindow {
 	return window;
 }
 ```
+doOpenInBrowserWindow会调用window.load方法 在window.ts中实现
+```js
+load(config: IWindowConfiguration, isReload?: boolean, disableExtensions?: boolean): void {
+	
+	...
+
+	// Load URL
+	perf.mark('main:loadWindow');
+	this._win.loadURL(this.getUrl(configuration));
+
+	...
+}
+
+private getUrl(windowConfiguration: IWindowConfiguration): string {
+
+	...
+	//加载欢迎屏幕的html
+	let configUrl = this.doGetUrl(config);
+	...
+	return configUrl;
+}
+
+//默认加载 vs/code/electron-browser/workbench/workbench.html
+private doGetUrl(config: object): string {
+	return `${require.toUrl('vs/code/electron-browser/workbench/workbench.html')}?config=${encodeURIComponent(JSON.stringify(config))}`;
+}
+```
