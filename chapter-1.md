@@ -111,7 +111,6 @@ function onReady() {
 				process.env['VSCODE_NLS_CONFIG'] = JSON.stringify(nlsConfig);
 				process.env['VSCODE_NODE_CACHED_DATA_DIR'] = cachedDataDir || '';
 
-				// electron main主进程
 				perf.mark('willLoadMainBundle');
 				//使用微软的loader组件加载electron-main/main文件
 				require('./bootstrap-amd').load('vs/code/electron-main/main', () => {
