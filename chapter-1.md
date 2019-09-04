@@ -72,7 +72,8 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 
 ## 启动流程分析
 
-### Eletron通过package.json中的main字段来定义应用入口。main.js 是vscode的入口。
+### Eletron通过package.json中的main字段来定义应用入口。
+main.js是vscode的入口。
 
 ```js
 app.once('ready', function () {
