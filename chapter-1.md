@@ -298,3 +298,14 @@ private openFirstWindow(accessor: ServicesAccessor, electronIpcServer: ElectronI
 		});
 	}
 ```
+afterWindowOpen()
+```js
+private afterWindowOpen(): void {
+
+	// Signal phase: after window open
+	this.lifecycleService.phase = LifecycleMainPhase.AfterWindowOpen;
+
+	// Remote Authorities
+	this.handleRemoteAuthorities();
+}
+```
