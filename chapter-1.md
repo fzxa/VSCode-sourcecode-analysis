@@ -377,7 +377,7 @@ main process的使命完成, 主界面渲染完成初始化。
 #### vs/workbench/electron-browser/desktop.main
 
 ```js
-
+...
 const services = await this.initServices();
 	await domContentLoaded();
 	mark('willStartWorkbench');
@@ -411,4 +411,5 @@ const services = await this.initServices();
 	// Logging
 	services.logService.trace('workbench configuration', JSON.stringify(this.environmentService.configuration));
 }
+...
 ```
