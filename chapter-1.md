@@ -154,3 +154,54 @@ electron-main/main 是程序真正启动的入口
 #### 这里主要做了两件事情：
 1. 初始化Service 
 2. 启动主实例
+
+直接看startup方法的实现
+```js
+private async startup(args: ParsedArgs): Promise<void> {
+
+		//spdlog 日志服务
+		const bufferLogService = new BufferLogService();
+		
+		// 1. 调用 createServices
+		const [instantiationService, instanceEnvironment] = this.createServices(args, bufferLogService);
+		try {
+
+			// 1.1 初始化Service服务
+			await instantiationService.invokeFunction(async accessor => {
+				// 基础服务，包括一些用户数据，缓存目录
+				const environmentService = accessor.get(IEnvironmentService);
+				// 配置服务
+				const configurationService = accessor.get(IConfigurationService);
+				// 持久化数据
+				const stateService = accessor.get(IStateService);
+
+				try {
+					await this.initServices(environmentService, configurationService as ConfigurationService, stateService as StateService);
+				} catch (error) {
+
+					// Show a dialog for errors that can be resolved by the user
+					this.handleStartupDataDirError(environmentService, error);
+
+					throw error;
+				}
+			});
+
+			// Startup
+			await instantiationService.invokeFunction(async accessor => {
+				const environmentService = accessor.get(IEnvironmentService);
+				const logService = accessor.get(ILogService);
+				const lifecycleService = accessor.get(ILifecycleService);
+				const configurationService = accessor.get(IConfigurationService);
+
+				const mainIpcServer = await this.doStartup(logService, environmentService, lifecycleService, instantiationService, true);
+
+				bufferLogService.logger = new SpdLogService('main', environmentService.logsPath, bufferLogService.getLevel());
+				once(lifecycleService.onWillShutdown)(() => (configurationService as ConfigurationService).dispose());
+
+				return instantiationService.createInstance(CodeApplication, mainIpcServer, instanceEnvironment).startup();
+			});
+		} catch (error) {
+			instantiationService.invokeFunction(this.quit, error);
+		}
+	}
+```
