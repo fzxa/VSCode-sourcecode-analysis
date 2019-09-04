@@ -93,7 +93,7 @@ function onReady() {
 	perf.mark('main:appReady');
 
 	Promise.all([nodeCachedDataDir.ensureExists(), userDefinedLocale]).then(([cachedDataDir, locale]) => {
-		//这里尝试获取本地配置信息，如果有的话会传递到startup
+		//1. 这里尝试获取本地配置信息，如果有的话会传递到startup
 		if (locale && !nlsConfiguration) {
 			nlsConfiguration = lp.getNLSConfiguration(product.commit, userDataPath, metaDataFile, locale);
 		}
@@ -102,29 +102,29 @@ function onReady() {
 			nlsConfiguration = Promise.resolve(undefined);
 		}
 
-		// 首先会检查用户语言环境配置，如果没有设置默认使用英语
+		
 		nlsConfiguration.then(nlsConfig => {
 			
-			//这里都用调用startup方法load electron主进程
+			//4. 首先会检查用户语言环境配置，如果没有设置默认使用英语 
 			const startup = nlsConfig => {
 				nlsConfig._languagePackSupport = true;
 				process.env['VSCODE_NLS_CONFIG'] = JSON.stringify(nlsConfig);
 				process.env['VSCODE_NODE_CACHED_DATA_DIR'] = cachedDataDir || '';
 
-				// Load main in AMD
+				// electron main主进程
 				perf.mark('willLoadMainBundle');
-				//使用微软的loader组件加载electron-main/main文件，electron的主进程。
+				//使用微软的loader组件加载electron-main/main文件
 				require('./bootstrap-amd').load('vs/code/electron-main/main', () => {
 					perf.mark('didLoadMainBundle');
 				});
 			};
 
-			// 1. 接收到有效的配置传入是其生效，调用startup
+			// 2. 接收到有效的配置传入是其生效，调用startup
 			if (nlsConfig) {
 				startup(nlsConfig);
 			}
 
-			// 2. 这里尝试使用本地的应用程序
+			// 3. 这里尝试使用本地的应用程序
 			// 应用程序设置区域在ready事件后才有效
 			else {
 				let appLocale = app.getLocale();
