@@ -457,5 +457,5 @@ export class Workbench extends Layout {
 	...
 }
 ```
-![img](https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/vscode-welcome.png){:width:500x}
+![img](https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/vscode-welcome.png){:height="100" width="100"}
 
