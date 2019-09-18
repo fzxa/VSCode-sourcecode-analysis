@@ -74,6 +74,12 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
     ├── nls.build.js  # 用于插件构建的NLS loader
     └── nls.js        # NLS（National Language Support）多语言loader
 ```
+### 核心层
+* base: 提供通用服务和构建用户界面
+* platform: 注入服务和基础服务代码
+* editor: 微软Monaco编辑器，也可独立运行使用
+* wrokbench: 配合Monaco并且给viewlets提供框架：如：浏览器状态栏，菜单栏利用electron实现桌面程序
+
 
 ## 启动流程分析
 
