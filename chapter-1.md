@@ -80,6 +80,16 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 * editor: 微软Monaco编辑器，也可独立运行使用
 * wrokbench: 配合Monaco并且给viewlets提供框架：如：浏览器状态栏，菜单栏利用electron实现桌面程序
 
+### 核心环境
+整个项目完全使用typescript实现，electron中运行主进程和渲染进程，使用的api有所不同，所以在core中每个目录组织也是爱照使用的api来安排，
+按照运行的目标环境分为几类：
+* common: 只使用javascritp api的代码，能在任何环境下运行
+* browser: 浏览器api, 如操作dom; 可以调用common
+* node: 需要使用node的api
+* electron-brower: 渲染进程api, 可以调用common, brower, node
+* electron-main: 主进程api, 可以调用: common, node
+
+
 
 ## 启动流程分析
 
