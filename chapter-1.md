@@ -22,7 +22,7 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 
 ![avatar](https://camo.githubusercontent.com/48c7e4a793fdf74aca9b74011b5682196310d841/68747470733a2f2f692e696d6775722e636f6d2f443243655830792e706e67)
 
-## 整体架构
+## 技术架构
 ![avatar](https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/vscode-source.png?raw=true)
 
 ### Electron 
