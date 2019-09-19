@@ -87,8 +87,8 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 * common: 只使用javascritp api的代码，能在任何环境下运行
 * browser: 浏览器api, 如操作dom; 可以调用common
 * node: 需要使用node的api
-* electron-brower: 渲染进程api, 可以调用common, brower, node
-* electron-main: 主进程api, 可以调用: common, node
+* electron-brower: 渲染进程api, 可以调用common, brower, node, 依赖[electron renderer-process API](https://github.com/electron/electron/tree/master/docs#modules-for-the-renderer-process-web-page)
+* electron-main: 主进程api, 可以调用: common, node 依赖于[electron main-process AP](https://github.com/electron/electron/tree/master/docs#modules-for-the-main-process)
 
 
 
