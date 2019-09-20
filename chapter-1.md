@@ -300,8 +300,14 @@ async startup(): Promise<void> {
 	// 4. 窗口打开后执行生命周期和授权操作
 	this.afterWindowOpen();
 	...
+
+	//vscode结束了性能问题的追踪
+	if (this.environmentService.args.trace) {
+		this.stopTracingEventually(windows);
+	}
 }
 ```
+
 
 openFirstWindow 主要实现
 CodeApplication.openFirstWindow 首次开启窗口时，创建 Electron 的 IPC，使主进程和渲染进程间通信。
@@ -337,6 +343,19 @@ private openFirstWindow(accessor: ServicesAccessor, electronIpcServer: ElectronI
 		});
 	}
 ```
+
+### 结束追踪 
+#### contentTracing.stopRecording(resultFilePath, callback)
+* resultFilePath String
+* callback Function
+在成功启动窗口后，程序结束性能追踪，停止对所有子进程的记录.
+
+子进程通常缓存查找数据，并且仅仅将数据截取和发送给主进程.这有利于在通过 IPC 发送查找数据之前减小查找时的运行开销，这样做很有价值.因此，发送查找数据，我们应当异步通知所有子进程来截取任何待查找的数据.
+
+一旦所有子进程接收到了 stopRecording 请求，将调用 callback ，并且返回一个包含查找数据的文件.
+
+如果 resultFilePath 不为空，那么将把查找数据写入其中，否则写入一个临时文件.实际文件路径如果不为空，则将调用 callback .
+
 
 #### vs/code/electron-main/windows.ts
 接下来到了electron的windows窗口，open方法在doOpen中执行窗口配置初始化，最终调用openInBrowserWindow -> 执行doOpenInBrowserWindow是其打开window,主要步骤如下：
