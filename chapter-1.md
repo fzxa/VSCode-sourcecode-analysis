@@ -71,7 +71,7 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
     ├── css.build.js  # 用于插件构建的CSS loader
     ├── css.js        # CSS loader
     ├── editor        # 对接IDE Core（读取编辑/交互状态），提供命令、上下文菜单、hover、snippet等支持
-    ├── loader.js     # AMD loader（用于异步加载AMD模块，类似于require.js）
+    ├── loader.js     # AMD loader（用于异步加载AMD模块）
     ├── nls.build.js  # 用于插件构建的NLS loader
     └── nls.js        # NLS（National Language Support）多语言loader
 ```
