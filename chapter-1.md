@@ -249,16 +249,16 @@ private async startup(args: ParsedArgs): Promise<void> {
 ### Services
 这里通过createService创建一些基础的Service
 
-##### 运行环境服务 EnvironmentService
+#### 运行环境服务 EnvironmentService
 /src/vs/platform/environment/node/environmentService.ts
 通过这个服务获取当前启动目录，日志目录，操作系统信息，配置文件目录，用户目录等。
 
-##### 日志服务 MultiplexLogService
+#### 日志服务 MultiplexLogService
 /src/vs/platform/log/common/log.ts
 默认使用控制台日志ConsoleLogMainService
 其中包含性能追踪和释放信息，日志输出级别 
 
-##### 配置服务 ConfigurationService
+#### 配置服务 ConfigurationService
 /src/vs/platform/configuration/node/configurationService.ts
 从运行环境服务获取内容
 
