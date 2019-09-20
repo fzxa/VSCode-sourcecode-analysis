@@ -115,6 +115,7 @@ categoryFilter是一个过滤器，它用来控制那些分类组应该被用来
 
 ```js
 app.once('ready', function () {
+	//启动追踪
 	if (args['trace']) {
 		// @ts-ignore
 		const contentTracing = require('electron').contentTracing;
