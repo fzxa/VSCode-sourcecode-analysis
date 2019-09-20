@@ -106,8 +106,8 @@ main.js是vscode的入口。
 
 #### contentTracing.startRecording(options, callback)
 * options Object
-** categoryFilter String
-** traceOptions String
+	* categoryFilter String
+	* traceOptions String
 * callback Function
 
 [关于trace的详细介绍]（https://www.w3cschool.cn/electronmanual/electronmanual-content-tracing.html）
