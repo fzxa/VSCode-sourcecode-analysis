@@ -271,7 +271,7 @@ src/vs/platform/lifecycle/common/lifecycleService.ts
 
 监听事件，electron app模块  比如：ready， window-all-closed，before-quit
 
-[electron app文档](https://www.w3cschool.cn/electronmanual/electronmanual-electronapp.html)
+可以参考官方[electron app文档](https://www.w3cschool.cn/electronmanual/electronmanual-electronapp.html)
 
 ### 状态服务 StateService
 src/vs/platform/state/node/stateService.ts
