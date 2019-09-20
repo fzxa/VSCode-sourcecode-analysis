@@ -104,8 +104,10 @@ main.js是vscode的入口。
 这有利于在通过 IPC发送查找数据之前减小查找时的运行开销，这样做很有价值.因此，发送查找数据，我们应当异步通知所有子进程来截取任何待查找的数据.
 一旦所有子进程接收到了 stopRecording 请求，将调用 callback ，并且返回一个包含查找数据的文件
 
-##### contentTracing.stopRecording(resultFilePath, callback)
-* resultFilePath String
+#### contentTracing.startRecording(options, callback)
+* options Object
+** categoryFilter String
+** traceOptions String
 * callback Function
 
 [关于trace的详细介绍]（https://www.w3cschool.cn/electronmanual/electronmanual-content-tracing.html）
