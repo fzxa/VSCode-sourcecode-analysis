@@ -97,6 +97,19 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 ### Electron通过package.json中的main字段来定义应用入口。
 main.js是vscode的入口。
 
+### 启动追踪
+这里如果传入trace参数，在onReady启动之前会调用chromium的收集跟踪数据，
+提供的底层的追踪工具允许我们深度了解 V8 的解析以及其他时间消耗情况，
+查找执行缓慢的逻辑操作，startRecording会异步执行请求所有子进程开始追踪，子进程通常缓存查找数据，并且仅仅将数据截取和发送给主进程.
+这有利于在通过 IPC发送查找数据之前减小查找时的运行开销，这样做很有价值.因此，发送查找数据，我们应当异步通知所有子进程来截取任何待查找的数据.
+一旦所有子进程接收到了 stopRecording 请求，将调用 callback ，并且返回一个包含查找数据的文件
+
+##### contentTracing.stopRecording(resultFilePath, callback)
+* resultFilePath String
+* callback Function
+
+[关于trace的详细介绍]（https://www.w3cschool.cn/electronmanual/electronmanual-content-tracing.html）
+
 ```js
 app.once('ready', function () {
 	if (args['trace']) {
