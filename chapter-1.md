@@ -594,4 +594,36 @@ export function once<T>(event: Event<T>): Event<T> {
 	};
 }
 ```
+事件会存储到一个事件队列，通过fire方法触发事件
+private _deliveryQueue?: LinkedList<[Listener<T>, T]>;
 
+```
+fire(event: T): void {
+	if (this._listeners) {
+		// 将所有事件传入 delivery queue
+		// 内部/嵌套方式通过emit发出.
+		// this调用事件驱动
+
+		if (!this._deliveryQueue) {
+			this._deliveryQueue = new LinkedList();
+		}
+
+		for (let iter = this._listeners.iterator(), e = iter.next(); !e.done; e = iter.next()) {
+			this._deliveryQueue.push([e.value, event]);
+		}
+
+		while (this._deliveryQueue.size > 0) {
+			const [listener, event] = this._deliveryQueue.shift()!;
+			try {
+				if (typeof listener === 'function') {
+					listener.call(undefined, event);
+				} else {
+					listener[0].call(listener[1], event);
+				}
+			} catch (e) {
+				onUnexpectedError(e);
+			}
+		}
+	}
+}
+```
