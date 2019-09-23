@@ -94,3 +94,376 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 * node: 需要使用node的api,比如文件io操作
 * electron-brower: 渲染进程api, 可以调用common, brower, node, 依赖[electron renderer-process API](https://github.com/electron/electron/tree/master/docs#modules-for-the-renderer-process-web-page)
 * electron-main: 主进程api, 可以调用: common, node 依赖于[electron main-process AP](https://github.com/electron/electron/tree/master/docs#modules-for-the-main-process)
+
+## <a name="3">启动主进程</a>
+
+### Electron通过package.json中的main字段来定义应用入口。
+main.js是vscode的入口。
+
+* src/main.js
+	* vs/code/electron-main/main.ts
+	* vs/code/electron-main/app.ts
+	* vs/code/electron-main/windows.ts
+	* vs/workbench/electron-browser/desktop.main.ts
+	* vs/workbench/browser/workbench.ts
+
+```js
+app.once('ready', function () {
+	//启动追踪，后面会讲到，跟性能检测优化相关。
+	if (args['trace']) {
+		// @ts-ignore
+		const contentTracing = require('electron').contentTracing;
+
+		const traceOptions = {
+			categoryFilter: args['trace-category-filter'] || '*',
+			traceOptions: args['trace-options'] || 'record-until-full,enable-sampling'
+		};
+
+		contentTracing.startRecording(traceOptions, () => onReady());
+	} else {
+		onReady();
+	}
+});
+function onReady() {
+	perf.mark('main:appReady');
+
+	Promise.all([nodeCachedDataDir.ensureExists(), userDefinedLocale]).then(([cachedDataDir, locale]) => {
+		//1. 这里尝试获取本地配置信息，如果有的话会传递到startup
+		if (locale && !nlsConfiguration) {
+			nlsConfiguration = lp.getNLSConfiguration(product.commit, userDataPath, metaDataFile, locale);
+		}
+
+		if (!nlsConfiguration) {
+			nlsConfiguration = Promise.resolve(undefined);
+		}
+
+		
+		nlsConfiguration.then(nlsConfig => {
+			
+			//4. 首先会检查用户语言环境配置，如果没有设置默认使用英语 
+			const startup = nlsConfig => {
+				nlsConfig._languagePackSupport = true;
+				process.env['VSCODE_NLS_CONFIG'] = JSON.stringify(nlsConfig);
+				process.env['VSCODE_NODE_CACHED_DATA_DIR'] = cachedDataDir || '';
+
+				perf.mark('willLoadMainBundle');
+				//使用微软的loader组件加载electron-main/main文件
+				require('./bootstrap-amd').load('vs/code/electron-main/main', () => {
+					perf.mark('didLoadMainBundle');
+				});
+			};
+
+			// 2. 接收到有效的配置传入是其生效，调用startup
+			if (nlsConfig) {
+				startup(nlsConfig);
+			}
+
+			// 3. 这里尝试使用本地的应用程序
+			// 应用程序设置区域在ready事件后才有效
+			else {
+				let appLocale = app.getLocale();
+				if (!appLocale) {
+					startup({ locale: 'en', availableLanguages: {} });
+				} else {
+
+					// 配置兼容大小写敏感，所以统一转换成小写
+					appLocale = appLocale.toLowerCase();
+					// 这里就会调用config服务，把本地配置加载进来再调用startup
+					lp.getNLSConfiguration(product.commit, userDataPath, metaDataFile, appLocale).then(nlsConfig => {
+						if (!nlsConfig) {
+							nlsConfig = { locale: appLocale, availableLanguages: {} };
+						}
+
+						startup(nlsConfig);
+					});
+				}
+			}
+		});
+	}, console.error);
+}
+```
+
+### vs/code/electron-main/main.ts
+electron-main/main 是程序真正启动的入口,进入main process初始化流程.
+#### 这里主要做了两件事情：
+1. 初始化Service 
+2. 启动主实例
+
+直接看startup方法的实现,基础服务初始化完成后会加载 CodeApplication, mainIpcServer, instanceEnvironment，调用 startup 方法启动APP
+```js
+private async startup(args: ParsedArgs): Promise<void> {
+
+		//spdlog 日志服务
+		const bufferLogService = new BufferLogService();
+		
+		// 1. 调用 createServices
+		const [instantiationService, instanceEnvironment] = this.createServices(args, bufferLogService);
+		try {
+
+			// 1.1 初始化Service服务
+			await instantiationService.invokeFunction(async accessor => {
+				// 基础服务，包括一些用户数据，缓存目录
+				const environmentService = accessor.get(IEnvironmentService);
+				// 配置服务
+				const configurationService = accessor.get(IConfigurationService);
+				// 持久化数据
+				const stateService = accessor.get(IStateService);
+
+				try {
+					await this.initServices(environmentService, configurationService as ConfigurationService, stateService as StateService);
+				} catch (error) {
+
+					// 抛出错误对话框
+					this.handleStartupDataDirError(environmentService, error);
+
+					throw error;
+				}
+			});
+
+			// 1.2 启动实例
+			await instantiationService.invokeFunction(async accessor => {
+				const environmentService = accessor.get(IEnvironmentService);
+				const logService = accessor.get(ILogService);
+				const lifecycleService = accessor.get(ILifecycleService);
+				const configurationService = accessor.get(IConfigurationService);
+
+				const mainIpcServer = await this.doStartup(logService, environmentService, lifecycleService, instantiationService, true);
+
+				bufferLogService.logger = new SpdLogService('main', environmentService.logsPath, bufferLogService.getLevel());
+				once(lifecycleService.onWillShutdown)(() => (configurationService as ConfigurationService).dispose());
+				
+				return instantiationService.createInstance(CodeApplication, mainIpcServer, instanceEnvironment).startup();
+			});
+		} catch (error) {
+			instantiationService.invokeFunction(this.quit, error);
+		}
+	}
+```
+
+
+#### vs/code/electron-main/app.ts
+这里首先触发CodeApplication.startup()方法， 在第一个窗口打开3秒后成为共享进程，
+```js
+async startup(): Promise<void> {
+	...
+
+	// 1. 第一个窗口创建共享进程
+	const sharedProcess = this.instantiationService.createInstance(SharedProcess, machineId, this.userEnv);
+	const sharedProcessClient = sharedProcess.whenReady().then(() => connect(this.environmentService.sharedIPCHandle, 'main'));
+	this.lifecycleService.when(LifecycleMainPhase.AfterWindowOpen).then(() => {
+		this._register(new RunOnceScheduler(async () => {
+			const userEnv = await getShellEnvironment(this.logService, this.environmentService);
+
+			sharedProcess.spawn(userEnv);
+		}, 3000)).schedule();
+	});
+	// 2. 创建app实例
+	const appInstantiationService = await this.createServices(machineId, trueMachineId, sharedProcess, sharedProcessClient);
+
+
+	// 3. 打开一个窗口 调用 
+	
+	const windows = appInstantiationService.invokeFunction(accessor => this.openFirstWindow(accessor, electronIpcServer, sharedProcessClient));
+
+	// 4. 窗口打开后执行生命周期和授权操作
+	this.afterWindowOpen();
+	...
+
+	//vscode结束了性能问题的追踪
+	if (this.environmentService.args.trace) {
+		this.stopTracingEventually(windows);
+	}
+}
+```
+
+
+openFirstWindow 主要实现
+CodeApplication.openFirstWindow 首次开启窗口时，创建 Electron 的 IPC，使主进程和渲染进程间通信。
+window会被注册到sharedProcessClient，主进程和共享进程通信
+根据 environmentService 提供的参数(path,uri)调用windowsMainService.open 方法打开窗口
+```js
+private openFirstWindow(accessor: ServicesAccessor, electronIpcServer: ElectronIPCServer, sharedProcessClient: Promise<Client<string>>): ICodeWindow[] {
+
+		...
+		// 1. 注入Electron IPC Service, windows窗口管理，菜单栏等服务
+
+		// 2. 根据environmentService进行参数配置
+		const macOpenFiles: string[] = (<any>global).macOpenFiles;
+		const context = !!process.env['VSCODE_CLI'] ? OpenContext.CLI : OpenContext.DESKTOP;
+		const hasCliArgs = hasArgs(args._);
+		const hasFolderURIs = hasArgs(args['folder-uri']);
+		const hasFileURIs = hasArgs(args['file-uri']);
+		const noRecentEntry = args['skip-add-to-recently-opened'] === true;
+		const waitMarkerFileURI = args.wait && args.waitMarkerFilePath ? URI.file(args.waitMarkerFilePath) : undefined;
+
+		...
+
+		// 打开主窗口，默认从执行命令行中读取参数 
+		return windowsMainService.open({
+			context,
+			cli: args,
+			forceNewWindow: args['new-window'] || (!hasCliArgs && args['unity-launch']),
+			diffMode: args.diff,
+			noRecentEntry,
+			waitMarkerFileURI,
+			gotoLineMode: args.goto,
+			initialStartup: true
+		});
+	}
+```
+
+
+
+#### vs/code/electron-main/windows.ts
+接下来到了electron的windows窗口，open方法在doOpen中执行窗口配置初始化，最终调用openInBrowserWindow -> 执行doOpenInBrowserWindow是其打开window,主要步骤如下：
+```js
+private openInBrowserWindow(options: IOpenBrowserWindowOptions): ICodeWindow {
+
+	...
+	// New window
+	if (!window) {
+		//1.判断是否全屏创建窗口
+		 ...
+		// 2. 创建实例窗口
+		window = this.instantiationService.createInstance(CodeWindow, {
+			state,
+			extensionDevelopmentPath: configuration.extensionDevelopmentPath,
+			isExtensionTestHost: !!configuration.extensionTestsPath
+		});
+
+		// 3.添加到当前窗口控制器
+		WindowsManager.WINDOWS.push(window);
+
+		// 4.窗口监听器
+		window.win.webContents.removeAllListeners('devtools-reload-page'); // remove built in listener so we can handle this on our own
+		window.win.webContents.on('devtools-reload-page', () => this.reload(window!));
+		window.win.webContents.on('crashed', () => this.onWindowError(window!, WindowError.CRASHED));
+		window.win.on('unresponsive', () => this.onWindowError(window!, WindowError.UNRESPONSIVE));
+		window.win.on('closed', () => this.onWindowClosed(window!));
+
+		// 5.注册窗口生命周期
+		(this.lifecycleService as LifecycleService).registerWindow(window);
+	}
+
+	...
+	
+	return window;
+}
+```
+doOpenInBrowserWindow会调用window.load方法 在window.ts中实现
+```js
+load(config: IWindowConfiguration, isReload?: boolean, disableExtensions?: boolean): void {
+	
+	...
+
+	// Load URL
+	perf.mark('main:loadWindow');
+	this._win.loadURL(this.getUrl(configuration));
+
+	...
+}
+
+private getUrl(windowConfiguration: IWindowConfiguration): string {
+
+	...
+	//加载欢迎屏幕的html
+	let configUrl = this.doGetUrl(config);
+	...
+	return configUrl;
+}
+
+//默认加载 vs/code/electron-browser/workbench/workbench.html
+private doGetUrl(config: object): string {
+	return `${require.toUrl('vs/code/electron-browser/workbench/workbench.html')}?config=${encodeURIComponent(JSON.stringify(config))}`;
+}
+```
+main process的使命完成, 主界面进行构建布局。
+
+
+在workbench.html中加载了workbench.js，
+这里调用return require('vs/workbench/electron-browser/desktop.main').main(configuration);实现对主界面的展示
+
+
+#### vs/workbench/electron-browser/desktop.main.ts
+创建工作区，调用workbench.startup()方法，构建主界面展示布局
+```js
+...
+async open(): Promise<void> {
+	const services = await this.initServices();
+	await domContentLoaded();
+	mark('willStartWorkbench');
+
+	// 1.创建工作区
+	const workbench = new Workbench(document.body, services.serviceCollection, services.logService);
+
+	// 2.监听窗口变化
+	this._register(addDisposableListener(window, EventType.RESIZE, e => this.onWindowResize(e, true, workbench)));
+
+	// 3.工作台生命周期
+	this._register(workbench.onShutdown(() => this.dispose()));
+	this._register(workbench.onWillShutdown(event => event.join(services.storageService.close())));
+
+	// 3.启动工作区
+	const instantiationService = workbench.startup();
+
+	...
+}
+...
+```
+
+#### vs/workbench/browser/workbench.ts
+工作区继承自layout类，主要作用是构建工作区，创建界面布局。
+```js
+export class Workbench extends Layout {
+	...
+	startup(): IInstantiationService {
+		try {
+			...
+			
+			// Services
+			const instantiationService = this.initServices(this.serviceCollection);
+
+			instantiationService.invokeFunction(async accessor => {
+				const lifecycleService = accessor.get(ILifecycleService);
+				const storageService = accessor.get(IStorageService);
+				const configurationService = accessor.get(IConfigurationService);
+
+				// Layout
+				this.initLayout(accessor);
+
+				// Registries
+				this.startRegistries(accessor);
+
+				// Context Keys
+				this._register(instantiationService.createInstance(WorkbenchContextKeysHandler));
+
+				// 注册监听事件
+				this.registerListeners(lifecycleService, storageService, configurationService);
+
+				// 渲染工作区
+				this.renderWorkbench(instantiationService, accessor.get(INotificationService) as NotificationService, storageService, configurationService);
+
+				// 创建工作区布局
+				this.createWorkbenchLayout(instantiationService);
+
+				// 布局构建
+				this.layout();
+
+				// Restore
+				try {
+					await this.restoreWorkbench(accessor.get(IEditorService), accessor.get(IEditorGroupsService), accessor.get(IViewletService), accessor.get(IPanelService), accessor.get(ILogService), lifecycleService);
+				} catch (error) {
+					onUnexpectedError(error);
+				}
+			});
+
+			return instantiationService;
+		} catch (error) {
+			onUnexpectedError(error);
+
+			throw error; // rethrow because this is a critical issue we cannot handle properly here
+		}
+	}
+	...
+}
+```
