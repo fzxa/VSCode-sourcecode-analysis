@@ -998,6 +998,10 @@ categoryFilter是一个过滤器，它用来控制那些分类组应该被用来
 
 ## 参考
 https://github.com/microsoft/vscode/wiki/How-to-Contribute
+
 https://github.com/Microsoft/vscode/wiki/Code-Organization
+
 http://xzper.com/2016/04/17/vscode%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90/
+
 http://www.ayqy.net/blog/vs-code%E6%BA%90%E7%A0%81%E7%AE%80%E6%9E%90/
+
