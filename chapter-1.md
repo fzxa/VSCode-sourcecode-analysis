@@ -288,7 +288,7 @@ src/vs/platform/theme/electron-main/themeMainService.ts
 
 这里只设置背景颜色，通过getBackgroundColor方法 IStateService存储
 
-#### 签名服务 SignService
+### 签名服务 SignService
 src/vs/platform/sign/node/signService.ts
 
 程序签名
