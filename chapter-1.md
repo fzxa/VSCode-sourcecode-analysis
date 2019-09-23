@@ -709,7 +709,7 @@ fire(event: T): void {
 ### 主进程
 src/vs/code/electron-main/main.ts
 
-main.ts在启动应用后就创建了一个主进程 main process，它可以通过electron中的一些模块直接与原生GUI（在你的应用窗口）交互。
+main.ts在启动应用后就创建了一个主进程 main process，它可以通过electron中的一些模块直接与原生GUI交互。
 ```js
 server = await serve(environmentService.mainIPCHandle);
 once(lifecycleService.onWillShutdown)(() => server.dispose());
