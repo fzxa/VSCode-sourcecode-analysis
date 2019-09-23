@@ -102,6 +102,12 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 ### Electron通过package.json中的main字段来定义应用入口。
 main.js是vscode的入口。
 
+* src/main.js
+	* vs/code/electron-main/main.ts
+	* vs/code/electron-main/app.ts
+	* vs/code/electron-main/windows.ts
+	* vs/workbench/electron-browser/desktop.main.ts
+	* vs/workbench/browser/workbench.ts
 
 ```js
 app.once('ready', function () {
