@@ -617,7 +617,7 @@ export class Workbench extends Layout {
 }
 ```
 
-## 事件分发 
+## <a name="1">事件分发</a> 
 ### event 
 src/vs/base/common/event.ts
 
@@ -683,7 +683,7 @@ fire(event: T): void {
 }
 ```
 
-## 进程通信
+## <a href="#6">进程通信</a>
 
 ### 主进程
 src/vs/code/electron-main/main.ts
@@ -841,7 +841,7 @@ export class LocalizationsChannel implements IServerChannel {
 
 ```
 
-## 主要窗口
+## <a name="7">主要窗口</a>
 
 workbench.ts中startup里面Workbench负责创建主界面
 src/vs/workbench/browser/workbench.ts
@@ -941,7 +941,7 @@ layout(options?: ILayoutOptions): void {
 	}
 ```
 
-## 开发调试
+## <a name="8">开发调试</a>
 
 ```js
 app.once('ready', function () {
