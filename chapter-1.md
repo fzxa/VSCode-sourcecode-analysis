@@ -290,8 +290,7 @@ src/vs/platform/theme/electron-main/themeMainService.ts
 
 ### 签名服务 SignService
 src/vs/platform/sign/node/signService.ts
-
-
+ 
 ```js
 private createServices(args: ParsedArgs, bufferLogService: BufferLogService): [IInstantiationService, typeof process.env] {
 	
@@ -322,9 +321,23 @@ private createServices(args: ParsedArgs, bufferLogService: BufferLogService): [I
 	return [new InstantiationService(services, true), instanceEnvironment];
 }
 ```
-服务创建用到SyncDescriptor方法，当用到该服务时进程实例化
-src/vs/platform/instantiation/common/descriptors.ts
 
+## 实例化服务
+
+SyncDescriptor负责注册这些服务，当用到该服务时进程实例化使用
+src/vs/platform/instantiation/common/descriptors.ts
+```js
+export class SyncDescriptor<T> {
+	readonly ctor: any;
+	readonly staticArguments: any[];
+	readonly supportsDelayedInstantiation: boolean;
+	constructor(ctor: new (...args: any[]) => T, staticArguments: any[] = [], supportsDelayedInstantiation: boolean = false) {
+		this.ctor = ctor;
+		this.staticArguments = staticArguments;
+		this.supportsDelayedInstantiation = supportsDelayedInstantiation;
+	}
+}
+```
 
 #### vs/code/electron-main/app.ts
 这里首先触发CodeApplication.startup()方法， 在第一个窗口打开3秒后成为共享进程，
