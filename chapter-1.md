@@ -312,7 +312,7 @@ private createServices(args: ParsedArgs, bufferLogService: BufferLogService): [I
 }
 ```
 
-## 实例化服务
+## <a name="4">实例化服务</a>
 
 SyncDescriptor负责注册这些服务，当用到该服务时进程实例化使用
 
