@@ -420,7 +420,8 @@ async startup(): Promise<void> {
 	const appInstantiationService = await this.createServices(machineId, trueMachineId, sharedProcess, sharedProcessClient);
 
 
-	// 3. 打开一个窗口 调用 openFirstWindow
+	// 3. 打开一个窗口 调用 
+	
 	const windows = appInstantiationService.invokeFunction(accessor => this.openFirstWindow(accessor, electronIpcServer, sharedProcessClient));
 
 	// 4. 窗口打开后执行生命周期和授权操作
@@ -706,7 +707,13 @@ fire(event: T): void {
 ## 进程通信
 
 ### 主进程
-main.js在启动应用后就创建了一个主进程-main process，它可以通过electron中的一些模块直接与原生GUI（在你的应用窗口）交互。
+src/vs/code/electron-main/main.ts
+
+main.ts在启动应用后就创建了一个主进程 main process，它可以通过electron中的一些模块直接与原生GUI（在你的应用窗口）交互。
+```js
+server = await serve(environmentService.mainIPCHandle);
+once(lifecycleService.onWillShutdown)(() => server.dispose());
+```
 ### 渲染进程
 仅启动主进程并不能给你的应用创建应用窗口。窗口是通过main文件里的主进程调用叫BrowserWindow的模块创建的。
 ### 主进程与渲染进程之间的通信
