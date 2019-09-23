@@ -563,7 +563,9 @@ export class Workbench extends Layout {
 }
 ```
 
-## 事件分发 once
+## 事件分发 
+### event 
+src/vs/base/common/event.ts
 
 程序中常见使用once方法进行事件绑定, 这个方法传入一个方法，放在匿名函数返回
 ```js
