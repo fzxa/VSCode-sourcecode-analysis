@@ -7,6 +7,7 @@
 * 事件分发
 * 进程通信
 * 主要窗口
+* 性能追踪 && debug
 
 ## 简介
 Visual Studio Code(简称VSCode) 是开源免费的IDE编辑器，原本是微软内部使用的云编辑器(Monaco)。
