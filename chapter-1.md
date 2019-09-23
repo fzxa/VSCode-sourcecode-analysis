@@ -246,7 +246,7 @@ private async startup(args: ParsedArgs): Promise<void> {
 	}
 ```
 
-### Services
+### 实例化服务
 这里通过createService创建一些基础的Service
 
 ### 运行环境服务 EnvironmentService
