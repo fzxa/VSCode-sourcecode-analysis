@@ -807,3 +807,4 @@ layout(options?: ILayoutOptions): void {
 
 调试界面在菜单栏找到 Help->Toggle Developers Tools 
 调出Chrome开发者调试工具进行调试
+[img](https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/vscode-debugg.png)
