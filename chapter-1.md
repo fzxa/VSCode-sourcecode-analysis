@@ -563,4 +563,25 @@ export class Workbench extends Layout {
 }
 ```
 
-## 事件分发
+## 事件分发 once
+
+程序中常见使用once方法进行事件绑定, 这个方法传入一个方法，放在匿名函数返回
+```
+export function once<T extends Function>(this: any, fn: T): T {
+	const _this = this;
+	let didCall = false;
+	let result: any;
+
+	return function () {
+		if (didCall) {
+			return result;
+		}
+
+		didCall = true;
+		result = fn.apply(_this, arguments);
+
+		return result;
+	} as any as T;
+}
+```
+
