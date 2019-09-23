@@ -33,7 +33,7 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 
 
 ## <a name="2">技术架构</a>
-![img](https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/vscode-source.png?raw=true)
+![img](https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/vscode-framework.png)
 
 ### Electron 
 
