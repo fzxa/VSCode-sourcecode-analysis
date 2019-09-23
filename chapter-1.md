@@ -595,6 +595,7 @@ export function once<T>(event: Event<T>): Event<T> {
 }
 ```
 循环派发了所有注册的事件， 事件会存储到一个事件队列，通过fire方法触发事件
+
 //事件存储队列
 private _deliveryQueue?: LinkedList<[Listener<T>, T]>;
 
