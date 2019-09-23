@@ -1,13 +1,13 @@
 # VSCode源码分析
 ## 目录
 * <a href="#1">简介</a>
-* 技术架构
-* 启动主进程
-* 实例化服务
-* 事件分发
-* 进程通信
-* 主要窗口
-* 开发调试
+* <a href="#2">技术架构</a>
+* <a href="#3">启动主进程</a>
+* <a href="#4">实例化服务</a>
+* <a href="#5">事件分发</a>
+* <a href="#6">进程通信</a>
+* <a href="#7">主要窗口</a>
+* <a href="#8">开发调试</a>
 
 ## <a name="1">简介</a>
 Visual Studio Code(简称VSCode) 是开源免费的IDE编辑器，原本是微软内部使用的云编辑器(Monaco)。
@@ -28,7 +28,7 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 > 需要注意的一点 运行环境依赖版本 Nodejs x64 version >= 10.16.0, < 11.0.0,  python 2.7(3.0不能正常执行)
 
 
-## 技术架构
+## <a name="2">技术架构</a>
 ![img](https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/vscode-source.png?raw=true)
 
 ### Electron 
@@ -97,7 +97,7 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 
 
 
-## 启动主进程
+## <a name="3">启动主进程</a>
 
 ### Electron通过package.json中的main字段来定义应用入口。
 main.js是vscode的入口。
