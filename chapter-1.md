@@ -12,6 +12,8 @@
 ## <a name="1">简介</a>
 Visual Studio Code(简称VSCode) 是开源免费的IDE编辑器，原本是微软内部使用的云编辑器(Monaco)。
 
+https://github.com/microsoft/vscode
+
 通过Eletron集成了桌面应用，可以跨平台使用，开发语言主要采用微软自家的TypeScript。
 整个项目结构比较清晰，方便阅读代码理解。成为了最流行跨平台的桌面IDE应用
 
