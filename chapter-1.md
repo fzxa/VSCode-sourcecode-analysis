@@ -705,6 +705,29 @@ fire(event: T): void {
 
 ## 进程通信
 
+### 主进程
+main.js在启动应用后就创建了一个主进程-main process，它可以通过electron中的一些模块直接与原生GUI（在你的应用窗口）交互。
+### 渲染进程
+仅启动主进程并不能给你的应用创建应用窗口。窗口是通过main文件里的主进程调用叫BrowserWindow的模块创建的。
+### 主进程与渲染进程之间的通信
+在electron中，主进程与渲染进程有很多通信的方法。比如ipcRenderer和ipcMain，还可以在渲染进程使用remote模块。
+
+### ipcMain & ipcRenderer
+* 主进程：ipcMain
+* 渲染进程：ipcRenderer
+
+ipcMain模块和ipcRenderer是类EventEmitter的实例。
+
+在主进程中使用ipcMain接收渲染线程发送过来的异步或同步消息，发送过来的消息将触发事件。
+
+在渲染进程中使用ipcRenderer向主进程发送同步或异步消息，也可以接收到主进程的消息。
+
+* 发送消息，事件名为 channel .
+* 回应同步消息, 你可以设置 event.returnValue .
+* 回应异步消息, 你可以使用 event.sender.send(...)
+
+
+
 ## 主要窗口元素
 
 workbench.ts中startup里面Workbench负责创建主界面
