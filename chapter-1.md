@@ -11,7 +11,7 @@ Visual Studio Code(简称VSCode) 是开源免费的IDE编辑器，原本是微�
 整个项目结构比较清晰，方便阅读代码理解。成为了最流行跨平台的桌面IDE应用
 
 微软希望VSCode在保持核心轻量级的基础上，增加项目支持，智能感知，编译调试。
-![avatar](https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/vscode-vside.png)
+![img](https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/vscode-vside.png)
 
 ## 编译安装
 下载最新版本,目前我用的是1.37.1版本
@@ -24,7 +24,7 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 
 
 ## 技术架构
-![avatar](https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/vscode-source.png?raw=true)
+![img](https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/vscode-source.png?raw=true)
 
 ### Electron 
 
@@ -806,5 +806,6 @@ layout(options?: ILayoutOptions): void {
 ```
 
 调试界面在菜单栏找到 Help->Toggle Developers Tools 
+
 调出Chrome开发者调试工具进行调试
 ![img](https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/vscode-debugg.png)
