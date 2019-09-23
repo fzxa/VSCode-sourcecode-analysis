@@ -617,7 +617,7 @@ export class Workbench extends Layout {
 }
 ```
 
-## <a name="1">事件分发</a> 
+## <a name="5">事件分发</a> 
 ### event 
 src/vs/base/common/event.ts
 
