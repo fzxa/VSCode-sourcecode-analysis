@@ -2,12 +2,12 @@
 # VSCode源码分析
 
 ## 目录
-* <a href="https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/chapter-1.md">启动主进程</a>
-* <a href="https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/chapter-2.md">实例化服务</a>
-* <a href="https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/chapter-3.md">事件分发</a>
-* <a href="https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/chapter-4.md">进程通信</a>
-* <a href="https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/chapter-5.md">主要窗口</a>
-* <a href="https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/chapter-6.md">开发调试</a>
+* <a href="https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/chapter-1.md">(一)启动主进程</a>
+* <a href="https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/chapter-2.md">(二)实例化服务</a>
+* <a href="https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/chapter-3.md">(三)事件分发</a>
+* <a href="https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/chapter-4.md">(四)进程通信</a>
+* <a href="https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/chapter-5.md">(五)主要窗口</a>
+* <a href="https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/chapter-6.md">(六)开发调试</a>
 
 ## <a name="1">简介</a>
 Visual Studio Code(简称VSCode) 是开源免费的IDE编辑器，原本是微软内部使用的云编辑器(Monaco)。
