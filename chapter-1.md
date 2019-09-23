@@ -728,7 +728,7 @@ ipcMain模块和ipcRenderer是类EventEmitter的实例。
 
 
 
-## 主要窗口元素
+## 主要窗口
 
 workbench.ts中startup里面Workbench负责创建主界面
 src/vs/workbench/browser/workbench.ts
