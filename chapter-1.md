@@ -943,6 +943,24 @@ layout(options?: ILayoutOptions): void {
 
 ## 开发调试
 
+```js
+app.once('ready', function () {
+	//启动追踪
+	if (args['trace']) {
+		// @ts-ignore
+		const contentTracing = require('electron').contentTracing;
+
+		const traceOptions = {
+			categoryFilter: args['trace-category-filter'] || '*',
+			traceOptions: args['trace-options'] || 'record-until-full,enable-sampling'
+		};
+
+		contentTracing.startRecording(traceOptions, () => onReady());
+	} else {
+		onReady();
+	}
+});
+```
 ### 启动追踪
 这里如果传入trace参数，在onReady启动之前会调用chromium的收集跟踪数据，
 提供的底层的追踪工具允许我们深度了解 V8 的解析以及其他时间消耗情况，
