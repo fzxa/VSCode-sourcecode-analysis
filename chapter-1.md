@@ -1,8 +1,12 @@
 # VSCode源码分析
 ## 目录
 * 简介
-* 启动流程分析
-
+* 技术架构
+* 启动主进程
+* 实例化服务
+* 事件分发
+* 进程通信
+* 主要窗口
 
 ## 简介
 Visual Studio Code(简称VSCode) 是开源免费的IDE编辑器，原本是微软内部使用的云编辑器(Monaco)。
@@ -246,7 +250,7 @@ private async startup(args: ParsedArgs): Promise<void> {
 	}
 ```
 
-### 实例化服务
+### Service
 这里通过createService创建一些基础的Service
 
 ### 运行环境服务 EnvironmentService
