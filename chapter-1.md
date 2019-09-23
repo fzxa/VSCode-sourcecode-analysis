@@ -827,7 +827,7 @@ layout(options?: ILayoutOptions): void {
 		}
 	}
 ```
-
+### debug
 调试界面在菜单栏找到 Help->Toggle Developers Tools 
 
 调出Chrome开发者调试工具进行调试
