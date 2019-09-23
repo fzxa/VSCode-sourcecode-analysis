@@ -571,7 +571,7 @@ src/vs/base/common/event.ts
 ```js
 export function once<T>(event: Event<T>): Event<T> {
 	return (listener, thisArgs = null, disposables?) => {
-		// we need this, in case the event fires during the listener call
+		// 设置次变量，防止事件重复触发造成事件污染
 		let didFire = false;
 		let result: IDisposable;
 		result = event(e => {
