@@ -567,23 +567,31 @@ export class Workbench extends Layout {
 ### event 
 src/vs/base/common/event.ts
 
-程序中常见使用once方法进行事件绑定, 这个方法传入一个方法，放在匿名函数返回
+程序中常见使用once方法进行事件绑定, 给定一个事件，返回一个只触发一次的事件，放在匿名函数返回
 ```js
-export function once<T extends Function>(this: any, fn: T): T {
-	const _this = this;
-	let didCall = false;
-	let result: any;
+export function once<T>(event: Event<T>): Event<T> {
+	return (listener, thisArgs = null, disposables?) => {
+		// we need this, in case the event fires during the listener call
+		let didFire = false;
+		let result: IDisposable;
+		result = event(e => {
+			if (didFire) {
+				return;
+			} else if (result) {
+				result.dispose();
+			} else {
+				didFire = true;
+			}
 
-	return function () {
-		if (didCall) {
-			return result;
+			return listener.call(thisArgs, e);
+		}, null, disposables);
+
+		if (didFire) {
+			result.dispose();
 		}
 
-		didCall = true;
-		result = fn.apply(_this, arguments);
-
 		return result;
-	} as any as T;
+	};
 }
 ```
 
