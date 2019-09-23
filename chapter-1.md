@@ -323,6 +323,9 @@ private createServices(args: ParsedArgs, bufferLogService: BufferLogService): [I
 	return [new InstantiationService(services, true), instanceEnvironment];
 }
 ```
+服务创建用到SyncDescriptor方法，当用到该服务时进程实力化
+src/vs/platform/instantiation/common/descriptors.ts
+
 
 #### vs/code/electron-main/app.ts
 这里首先触发CodeApplication.startup()方法， 在第一个窗口打开3秒后成为共享进程，
