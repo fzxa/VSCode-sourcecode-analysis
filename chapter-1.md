@@ -1003,6 +1003,8 @@ categoryFilter是一个过滤器，它用来控制那些分类组应该被用来
 
 
 ## 参考
+https://electronjs.org/docs
+
 https://github.com/microsoft/vscode/wiki/How-to-Contribute
 
 https://github.com/Microsoft/vscode/wiki/Code-Organization
