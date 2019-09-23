@@ -325,7 +325,9 @@ private createServices(args: ParsedArgs, bufferLogService: BufferLogService): [I
 ## 实例化服务
 
 SyncDescriptor负责注册这些服务，当用到该服务时进程实例化使用
+
 src/vs/platform/instantiation/common/descriptors.ts
+
 ```js
 export class SyncDescriptor<T> {
 	readonly ctor: any;
