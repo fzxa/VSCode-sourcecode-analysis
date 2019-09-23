@@ -291,7 +291,6 @@ src/vs/platform/theme/electron-main/themeMainService.ts
 ### 签名服务 SignService
 src/vs/platform/sign/node/signService.ts
 
-程序签名
 
 ```js
 private createServices(args: ParsedArgs, bufferLogService: BufferLogService): [IInstantiationService, typeof process.env] {
@@ -323,7 +322,7 @@ private createServices(args: ParsedArgs, bufferLogService: BufferLogService): [I
 	return [new InstantiationService(services, true), instanceEnvironment];
 }
 ```
-服务创建用到SyncDescriptor方法，当用到该服务时进程实力化
+服务创建用到SyncDescriptor方法，当用到该服务时进程实例化
 src/vs/platform/instantiation/common/descriptors.ts
 
 
