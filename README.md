@@ -2,6 +2,7 @@
 # VSCode源码分析
 
 ## 目录
+* <a href="https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/all.md">总览</a>
 * <a href="https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/chapter-1.md">(一)启动主进程</a>
 * <a href="https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/chapter-2.md">(二)实例化服务</a>
 * <a href="https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/chapter-3.md">(三)事件分发</a>
