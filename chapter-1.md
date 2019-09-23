@@ -689,7 +689,7 @@ fire(event: T): void {
 }
 ```
 
-## <a href="#6">进程通信</a>
+## <a name="6">进程通信</a>
 
 ### 主进程
 src/vs/code/electron-main/main.ts
