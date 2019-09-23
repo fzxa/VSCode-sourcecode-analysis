@@ -111,7 +111,7 @@ main.js是vscode的入口。
 
 ```js
 app.once('ready', function () {
-	//启动追踪
+	//启动追踪，后面会讲到，跟性能检测优化相关。
 	if (args['trace']) {
 		// @ts-ignore
 		const contentTracing = require('electron').contentTracing;
