@@ -97,7 +97,7 @@ Linux, Window, MacOS三个系统编译时有些差别，参考官方文档，
 * electron-brower: 渲染进程api, 可以调用common, brower, node, 依赖[electron renderer-process API](https://github.com/electron/electron/tree/master/docs#modules-for-the-renderer-process-web-page)
 * electron-main: 主进程api, 可以调用: common, node 依赖于[electron main-process AP](https://github.com/electron/electron/tree/master/docs#modules-for-the-main-process)
 
-
+![img](https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/vscode-welcome.png)
 
 ## <a name="3">启动主进程</a>
 
