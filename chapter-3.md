@@ -1,3 +1,4 @@
+# VSCode源码分析 - 事件分发
 ## 目录
 * <a href="https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/chapter-1.md">简介</a>
 * <a href="https://github.com/fzxa/VSCode-sourcecode-analysis/blob/master/chapter-1.md">技术架构</a>
