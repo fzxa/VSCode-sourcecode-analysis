@@ -341,6 +341,65 @@ export class SyncDescriptor<T> {
 }
 ```
 
+main.ts中startup方法调用invokeFunction.get实例化服务
+```js
+await instantiationService.invokeFunction(async accessor => {
+	const environmentService = accessor.get(IEnvironmentService);
+	const configurationService = accessor.get(IConfigurationService);
+	const stateService = accessor.get(IStateService);
+	try {
+		await this.initServices(environmentService, configurationService as ConfigurationService, stateService as StateService);
+	} catch (error) {
+
+		// Show a dialog for errors that can be resolved by the user
+		this.handleStartupDataDirError(environmentService, error);
+
+		throw error;
+	}
+});
+```
+
+get方法调用_getOrCreateServiceInstance，这里第一次创建会存入缓存中
+下次实例化对象时会优先从缓存中获取对象。
+
+src/vs/platform/instantiation/common/instantiationService.ts
+
+```js
+invokeFunction<R, TS extends any[] = []>(fn: (accessor: ServicesAccessor, ...args: TS) => R, ...args: TS): R {
+	let _trace = Trace.traceInvocation(fn);
+	let _done = false;
+	try {
+		const accessor: ServicesAccessor = {
+			get: <T>(id: ServiceIdentifier<T>, isOptional?: typeof optional) => {
+
+				if (_done) {
+					throw illegalState('service accessor is only valid during the invocation of its target method');
+				}
+
+				const result = this._getOrCreateServiceInstance(id, _trace);
+				if (!result && isOptional !== optional) {
+					throw new Error(`[invokeFunction] unknown service '${id}'`);
+				}
+				return result;
+			}
+		};
+		return fn.apply(undefined, [accessor, ...args]);
+	} finally {
+		_done = true;
+		_trace.stop();
+	}
+}
+private _getOrCreateServiceInstance<T>(id: ServiceIdentifier<T>, _trace: Trace): T {
+	let thing = this._getServiceInstanceOrDescriptor(id);
+	if (thing instanceof SyncDescriptor) {
+		return this._createAndCacheServiceInstance(id, thing, _trace.branch(id, true));
+	} else {
+		_trace.branch(id, false);
+		return thing;
+	}
+}
+```
+
 #### vs/code/electron-main/app.ts
 这里首先触发CodeApplication.startup()方法， 在第一个窗口打开3秒后成为共享进程，
 ```js
