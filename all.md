@@ -541,7 +541,7 @@ main process的使命完成, 主界面进行构建布局。
 这里调用return require('vs/workbench/electron-browser/desktop.main').main(configuration);实现对主界面的展示
 
 
-#### vs/workbench/electron-browser/desktop.main
+#### vs/workbench/electron-browser/desktop.main.ts
 创建工作区，调用workbench.startup()方法，构建主界面展示布局
 ```js
 ...
